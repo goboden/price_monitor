@@ -1,12 +1,11 @@
-import os
 from sqlalchemy.orm import sessionmaker
 from models import db, User, Goods, Price
 from sqlalchemy import create_engine
+from config import DB_URI
 
 
 def main():
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    engine = create_engine('sqlite:///' + os.path.join(basedir, 'price_monitor.db'), echo=True)
+    engine = create_engine(DB_URI, echo=True)
 
     db.metadata.create_all(engine)
 
