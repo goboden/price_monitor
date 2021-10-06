@@ -1,14 +1,51 @@
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, formatter
+import logging
 from url_parser.parser import GenegalParser
+
+
+logging.basicConfig(filename='hobbygames.log', level=logging.INFO)
+logging.info('hobbygames')
+
+
+def get_price(soup: BeautifulSoup) -> float:
+    div = soup.find('div', class_='price price-new')
+    price_text = div.text
+    price_text = ''.join([s for s in price_text if s.isdigit()])
+    try:
+        price = float(price_text)
+    except ValueError as e:
+        logging.info(f'ValueError: {e}')
+    return price
+
+
+def get_name(soup: BeautifulSoup) -> str:
+    div = soup.find('div', class_='product-info__main')
+    name_text = div.text
+    name_text = name_text.replace('\n', '')
+
+    return name_text
+
+
+def get_description(soup: BeautifulSoup) -> str:
+    div = soup.find('div', class_='desc-text')
+    desc_text = div.text
+
+    return desc_text
 
 
 class Parser(GenegalParser):
     def __init__(self, url, **kwargs):
         super().__init__(url, **kwargs)
+        logging.info(f'New parser {url}')
+        logging.info(f'... {self.cache_filename}')
 
-    def get_price(self):
+    def get_info(self):
         if self.html:
             soup = BeautifulSoup(self.html, 'html.parser')
-            price_div = soup.find('div', class_='price price-new')
-            return price_div
-        return False
+            self.info['price'] = get_price(soup)
+            self.info['name'] = get_name(soup)
+            self.info['description'] = get_description(soup)
+        else:
+            logging.info('get_info(): No html')
+
+        return self.info
