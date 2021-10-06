@@ -22,15 +22,19 @@ def get_name(soup: BeautifulSoup) -> str:
     div = soup.find('div', class_='product-info__main')
     name_text = div.text
     name_text = name_text.replace('\n', '')
-
     return name_text
 
 
 def get_description(soup: BeautifulSoup) -> str:
     div = soup.find('div', class_='desc-text')
     desc_text = div.text
-
     return desc_text
+
+
+def get_picture(soup: BeautifulSoup) -> str:
+    el = soup.find('a', class_='lightGallery')
+    picture = el.get('href')
+    return picture
 
 
 class Parser(GenegalParser):
@@ -45,6 +49,7 @@ class Parser(GenegalParser):
             self.info['price'] = get_price(soup)
             self.info['name'] = get_name(soup)
             self.info['description'] = get_description(soup)
+            self.info['picture'] = get_picture(soup)
         else:
             logging.info('get_info(): No html')
         return self.info
