@@ -1,5 +1,5 @@
 from sqlalchemy.orm import sessionmaker
-from models import db, User, Goods, Price
+from db_module.models import db
 from sqlalchemy import create_engine
 from config import DB_URI
 

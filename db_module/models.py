@@ -7,51 +7,67 @@ db = declarative_base()
 
 class Price(db):
     """
-    period, goods_id (fk), price. id (pk)
+    id (pk), goods_id (fk), check_date, price.
     """
     __tablename__ = 'price'
 
     id = Column(Integer, primary_key=True)
-    period = Column(DateTime, nullable=False)
     goods_id = Column(Integer, ForeignKey('goods.id'), nullable=False)
+    check_date = Column(DateTime, nullable=False)
     price = Column(Float, nullable=False)
 
-
     def __repr__(self):
-        return f'<{self.period} {self.price}>'
+        return f"{self.id}|{self.goods_id}|{self.check_date}|{self.price}"
 
 
 class Goods(db):
     """
-    Поля id (pk), user_id (fk), url, check_period.
+    id (pk), user_id (fk), url, title, description, image, check_date.
+
     """
     __tablename__ = 'goods'
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     url = Column(String, unique=True, nullable=False)
-    check_period = Column(DateTime, nullable=False)
+    title = Column(String, unique=True, nullable=False)
+    description = Column(String, unique=True, nullable=False)
+    image = Column(String, unique=True, nullable=False)
+    check_date = Column(DateTime, nullable=False)
 
     def __repr__(self):
-        return f'<{self.user_id} {self.url} {self.check_period}>'
+        return f'{self.id}|{self.user_id}|{self.url}|{self.title}|{self.description}|{self.image}|{self.check_date}'
 
 
 class User(db):
     """
-    id (pk), telegram_id, username, password
+    id (pk), username, password
     """
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
-    telegram_id = Column(String(64), index=True)
     username = Column(String(64), index=True, unique=True)
     password = Column(String(128))
 
-    def set_password(self, password):
+    def gen_password(self, password):
         return generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
     def __repr__(self):
-        return f'User {self.username}'
+        return f'{self.id}|{self.username}|{self.password}'
+
+
+class Telegram(db):
+    """
+    id (pk), username, tg_username
+    """
+    __tablename__ = 'telegram'
+
+    id = Column(Integer, primary_key=True)
+    username = Column(Integer, ForeignKey('users.username'), nullable=False)
+    tg_username = Column(String(64), nullable=False, unique=True)
+
+    def __repr__(self):
+        return f'{self.id}|{self.username}|{self.tg_username}'
