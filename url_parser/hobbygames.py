@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup, formatter
+from bs4 import BeautifulSoup
 import logging
 from url_parser.parser import GenegalParser
 
@@ -47,5 +47,4 @@ class Parser(GenegalParser):
             self.info['description'] = get_description(soup)
         else:
             logging.info('get_info(): No html')
-
         return self.info
