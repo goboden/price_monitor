@@ -3,6 +3,17 @@ from pathlib import Path
 import os
 from datetime import datetime
 import requests
+from bs4 import BeautifulSoup
+import logging
+
+
+logging.basicConfig(filename='parser.log', level=logging.INFO)
+
+
+class ParseError(Exception):
+    def __init__(self, info):
+        self.message = f'Parse error: {info}'
+        super().__init__(self.message)
 
 
 def get_file_ttl(filename):
@@ -36,7 +47,33 @@ def save_html_to_cache(html: str, url):
             f.write(html)
 
 
-class GenegalParser():
+class GeneralParser():
+    @classmethod
+    def get_html_from_request(cls, url):
+        try:
+            result = requests.get(url)
+            result.raise_for_status()
+            html = result.text
+            return html
+        except (requests.RequestException, ValueError):
+            pass
+
+    @classmethod
+    def get_price(cls, soup):
+        raise ParseError('get_price() is not implemented')
+
+    @classmethod
+    def get_name(cls, soup):
+        raise ParseError('get_name() is not implemented')
+
+    @classmethod
+    def get_description(cls, soup):
+        raise ParseError('get_description() is not implemented')
+
+    @classmethod
+    def get_picture(cls, soup):
+        raise ParseError('get_picture() is not implemented')
+
     def __init__(self, url, from_cache=True, cache_ttl=1440):
         self.url = url
         self.from_cache = from_cache
@@ -50,24 +87,29 @@ class GenegalParser():
             'price': 0
         }
 
+    def __repr__(self):
+        return 'general parser'
+
     def get_html(self):
         if self.from_cache:
             self.html = get_html_from_cache(self.url, ttl=self.cache_ttl)
         if not self.html:
-            try:
-                result = requests.get(self.url)
-                result.raise_for_status()
-                self.html = result.text
-                if self.html:
-                    save_html_to_cache(self.html, self.url)
-            except (requests.RequestException, ValueError):
-                pass
-
-    def try_to_get(self):
-        self.get_html()
-        if self.html:
-            return True
-        return False
+            self.html = self.get_html_from_request(self.url)
+            if self.html:
+                save_html_to_cache(self.html, self.url)
 
     def get_info(self):
-        raise NotImplementedError
+        if self.html:
+            info = self.info.copy()
+            try:
+                soup = BeautifulSoup(self.html, 'html.parser')
+                self.info['price'] = self.get_price(soup)
+                self.info['name'] = self.get_name(soup)
+                self.info['description'] = self.get_description(soup)
+                self.info['picture'] = self.get_picture(soup)
+            except ParseError as e:
+                self.info = info
+                logging.info(e)
+        else:
+            logging.info('Parse error: No html')
+        return self.info

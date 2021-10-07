@@ -1,5 +1,5 @@
 from urllib.parse import urlparse
-from url_parser.parser import GenegalParser
+from url_parser.parser import GeneralParser
 import url_parser.yandex
 import url_parser.hobbygames
 
@@ -16,7 +16,7 @@ class ParserNotFoundError(Exception):
         super().__init__(self.message)
 
 
-def get_parser(url: str, **kwargs) -> GenegalParser:
+def get_parser(url: str, **kwargs) -> GeneralParser:
     parsed_url = urlparse(url)
     domain = parsed_url.netloc
     parser_module = parsers.get(domain, False)
