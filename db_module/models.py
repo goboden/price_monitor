@@ -16,9 +16,6 @@ class Price(db):
     check_date = Column(DateTime, nullable=False)
     price = Column(Float, nullable=False)
 
-    def __repr__(self):
-        return f"{self.id}|{self.goods_id}|{self.check_date}|{self.price}"
-
 
 class Goods(db):
     """
@@ -30,13 +27,10 @@ class Goods(db):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     url = Column(String, unique=True, nullable=False)
-    title = Column(String, unique=True, nullable=False)
-    description = Column(String, unique=True, nullable=False)
-    image = Column(String, unique=True, nullable=False)
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=False)
+    image = Column(String, nullable=False)
     check_date = Column(DateTime, nullable=False)
-
-    def __repr__(self):
-        return f'{self.id}|{self.user_id}|{self.url}|{self.title}|{self.description}|{self.image}|{self.check_date}'
 
 
 class User(db):
@@ -55,9 +49,6 @@ class User(db):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-    def __repr__(self):
-        return f'{self.id}|{self.username}|{self.password}'
-
 
 class Telegram(db):
     """
@@ -68,6 +59,3 @@ class Telegram(db):
     id = Column(Integer, primary_key=True)
     username = Column(Integer, ForeignKey('users.username'), nullable=False)
     tg_username = Column(String(64), nullable=False, unique=True)
-
-    def __repr__(self):
-        return f'{self.id}|{self.username}|{self.tg_username}'

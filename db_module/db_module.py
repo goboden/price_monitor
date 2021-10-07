@@ -84,30 +84,53 @@ def connect_db():
     return __session
 
 
-def check_pass(username, new_password):
-    # TODO сделать проверку пароля
-    pass
-
-
 def update_password(username, new_password):
+    """
+    Обновление пароля в БД
+
+    :param username:
+    :param new_password:
+    :return:
+    """
     session = connect_db()
     user = User()
     session.query(User).filter_by(username=username).update({'password': user.gen_password(new_password)})
     session.commit()
 
-# TODO Сделать объединенный интерфейс добавления нового товара и цены. Не понятно есть ли в этом необходимость.
+
+def get_goods(username):
+    """
+    Получения товаров по пользователю.
+
+    :param username:
+    :return: Список кортежей
+    """
+    session = connect_db()
+    user_id = session.query(User.id).filter_by(username=username)[0][0]
+    return session.query(Goods.id,
+                         Goods.title,
+                         Goods.url,
+                         Goods.image,
+                         Goods.description,
+                         Goods.check_date).filter_by(user_id=user_id).all()
 
 
 if __name__ == '__main__':
 
     # TODO Удалить тестовые вызовы функции
 
-    # add_user(username='test_user1', password='0123456789')
+    # add_user(username='test_user2', password='0987654321')
     # add_telegram_user(username='test_user1', tg_username='tg_user2')
-    # add_goods(url='http://www.example.com', check_date=datetime.now(),
-    #           user_id=2, title='test goods', description='описание', image='ссылка на картинку')
+    # add_goods(url='http://www.example4.com', check_date=datetime.now(),
+    #            user_id=1, title='test goods4', description='описание', image='ссылка на картинку')
+    # add_goods(url='http://www.example5.com', check_date=datetime.now(),
+    #            user_id=1, title='test goods5', description='описание', image='ссылка на картинку')
+    # add_goods(url='http://www.example6.com', check_date=datetime.now(),
+    #            user_id=1, title='test goods6', description='описание', image='ссылка на картинку')
     # add_price(check_date=datetime.now(), goods_id=1, price=130.00)
     # add_price(check_date=datetime.now(), goods_id=1, price=1.00)
     # add_price(check_date=datetime.now(), goods_id=1, price=0.50)
     # update_password(username='test_user1', new_password='asdf')
+    for i in get_goods('test_user2'):
+        print(i)
     pass
