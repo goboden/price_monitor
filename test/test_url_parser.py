@@ -42,10 +42,10 @@ def test_parser_get_info_yandex_one():
     parser.get_html()
     info = parser.get_info()
 
-    assert info['price'] == 4580.0
+    assert info['price'] == 4390.0
     assert info[
         'name'] == 'Аккумулятор KARCHER Battery Power 18/25 (2.445-034.0) Li-Ion 18 В 2.5 А·ч'
-    assert info['description'] != ''
+    assert info['description'] == ''
     assert info['picture'] != ''
 
 
@@ -56,7 +56,7 @@ def test_parser_get_info_yandex_two():
     parser.get_html()
     info = parser.get_info()
 
-    assert info['price'] == 2313.0
+    assert info['price'] == 2390.0
     assert info['name'] == 'Клавиатура Logitech K360'
-    assert info['description'] != ''
+    assert info['description'] == ''
     assert info['picture'] != ''

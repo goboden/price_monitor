@@ -16,6 +16,14 @@ class ParseError(Exception):
         super().__init__(self.message)
 
 
+def get_chache_dir():
+    pafent_dir = Path(__file__).parent
+    cache_dir = pafent_dir.joinpath('cache')
+    if not cache_dir.exists():
+        os.mkdir(cache_dir)
+    return cache_dir
+
+
 def get_file_ttl(filename):
     file_time = os.path.getmtime(filename)
     delta = datetime.now() - datetime.fromtimestamp(file_time)
@@ -23,10 +31,11 @@ def get_file_ttl(filename):
 
 
 def get_cache_filename(url: str):
+    cache_dir = get_chache_dir()
     parse_result = urlparse(url)
     filename = f'{parse_result.netloc}{parse_result.path}'
     filename = filename.translate(str.maketrans('./', '__')) + '.html'
-    return Path(__file__).parent.joinpath('cache').joinpath(filename)
+    return cache_dir.joinpath(filename)
 
 
 def get_html_from_cache(url: str, ttl: int) -> str:
@@ -55,8 +64,8 @@ class GeneralParser():
             result.raise_for_status()
             html = result.text
             return html
-        except (requests.RequestException, ValueError):
-            pass
+        except (requests.RequestException, ValueError) as e:
+            logging.info(e)
 
     @classmethod
     def get_price(cls, soup):
@@ -88,15 +97,18 @@ class GeneralParser():
         }
 
     def __repr__(self):
-        return 'general parser'
+        return 'general_parser'
 
     def get_html(self):
         if self.from_cache:
             self.html = get_html_from_cache(self.url, ttl=self.cache_ttl)
         if not self.html:
-            self.html = self.get_html_from_request(self.url)
-            if self.html:
-                save_html_to_cache(self.html, self.url)
+            try:
+                self.html = self.get_html_from_request(self.url)
+                if self.html:
+                    save_html_to_cache(self.html, self.url)
+            except Exception as e:
+                logging.info(e)
 
     def get_info(self):
         if self.html:
