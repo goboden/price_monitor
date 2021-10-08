@@ -2,10 +2,8 @@ from telegram.update import Update
 from telegram.ext.callbackcontext import CallbackContext
 from telegram.ext import Updater, CommandHandler
 from telebot.secret import API_KEY
+import database
 
-
-# bot = telegram.Bot(API_KEY)
-# bot_updater = Updater(bot=bot, use_context=True)
 bot_updater = Updater(API_KEY, use_context=True)
 bot = bot_updater.bot
 
@@ -18,7 +16,11 @@ def start_handler(update: Update, context: CallbackContext):
     telegram_id = update.message.from_user.id
     user_name = update.message.from_user.name
     chat_id = update.message.chat.id
-    update.message.reply_text(f'{user_name} ({telegram_id}) from {chat_id}')
+    try:
+        database.add_user(user_name, telegram_id, chat_id)
+        update.message.reply_text('Вы успешно зарегистрировались')
+    except database.UserExistsError:
+        update.message.reply_text('Вы уже ранее регистрировались')
 
 
 dp = bot_updater.dispatcher
