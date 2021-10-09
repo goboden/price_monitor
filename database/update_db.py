@@ -1,9 +1,10 @@
-from models import db, User, Goods, Price, Telegram
+from database.models import db, User, Goods, Price, Telegram
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
-from config import DB_URI
-from werkzeug.security import generate_password_hash, check_password_hash
+from config import DB_URI, SECRET_KEY
+import hashlib
+from database.service_functions import gen_password
 
 
 def add_to_db(data):
@@ -31,8 +32,7 @@ def add_user(username, password):
     :param password: В базу сохраняется хэш пароля.
     :return:
     """
-    user = User()
-    return User(username=username, password=user.gen_password(password))
+    return User(username=username, password=gen_password(password))
 
 
 @add_to_db
@@ -93,44 +93,5 @@ def update_password(username, new_password):
     :return:
     """
     session = connect_db()
-    user = User()
-    session.query(User).filter_by(username=username).update({'password': user.gen_password(new_password)})
+    session.query(User).filter_by(username=username).update({'password': gen_password(password=new_password)})
     session.commit()
-
-
-def get_goods(username):
-    """
-    Получения товаров по пользователю.
-
-    :param username:
-    :return: Список кортежей
-    """
-    session = connect_db()
-    user_id = session.query(User.id).filter_by(username=username)[0][0]
-    return session.query(Goods.id,
-                         Goods.title,
-                         Goods.url,
-                         Goods.image,
-                         Goods.description,
-                         Goods.check_date).filter_by(user_id=user_id).all()
-
-
-if __name__ == '__main__':
-
-    # TODO Удалить тестовые вызовы функции
-
-    # add_user(username='test_user2', password='0987654321')
-    # add_telegram_user(username='test_user1', tg_username='tg_user2')
-    # add_goods(url='http://www.example4.com', check_date=datetime.now(),
-    #            user_id=1, title='test goods4', description='описание', image='ссылка на картинку')
-    # add_goods(url='http://www.example5.com', check_date=datetime.now(),
-    #            user_id=1, title='test goods5', description='описание', image='ссылка на картинку')
-    # add_goods(url='http://www.example6.com', check_date=datetime.now(),
-    #            user_id=1, title='test goods6', description='описание', image='ссылка на картинку')
-    # add_price(check_date=datetime.now(), goods_id=1, price=130.00)
-    # add_price(check_date=datetime.now(), goods_id=1, price=1.00)
-    # add_price(check_date=datetime.now(), goods_id=1, price=0.50)
-    # update_password(username='test_user1', new_password='asdf')
-    for i in get_goods('test_user2'):
-        print(i)
-    pass

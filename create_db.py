@@ -1,5 +1,5 @@
 from sqlalchemy.orm import sessionmaker
-from db_module.models import db
+from database.models import db
 from sqlalchemy import create_engine
 from config import DB_URI
 
