@@ -11,7 +11,7 @@ def main():
 
     Session = sessionmaker(bind=engine)
     session = Session()
-
+    print(*session)
 
 if __name__ == "__main__":
     main()

@@ -4,7 +4,7 @@ import database.models
 from config import DB_URI
 from database.update_db import add_user, add_telegram_user, add_price, add_goods, update_password
 from database.get_from_db import get_hash_by_user, get_user_by_password, get_goods_by_username
-from database.service_functions import gen_password
+from database.service_functions import gen_password, log_to_file
 
 
 def check_password(username, password):

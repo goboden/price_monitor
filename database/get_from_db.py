@@ -1,5 +1,4 @@
 from sqlalchemy import create_engine
-# from database.models import User
 from config import DB_URI
 from database.service_functions import gen_password
 
