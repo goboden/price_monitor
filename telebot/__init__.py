@@ -24,6 +24,12 @@ def start_handler(update: Update, context: CallbackContext):
         update.message.reply_text('Вы уже ранее регистрировались')
 
 
+def password_handler(update: Update, context: CallbackContext):
+    telegram_id = update.message.from_user.id
+    password = database.generate_password(telegram_id)
+    update.message.reply_text(f'Ваш новый пароль: {password}')
+
+
 def add_url(update: Update, context: CallbackContext):
     url = update.message.text
     telegram_id = update.message.from_user.id
@@ -45,4 +51,5 @@ def add_url(update: Update, context: CallbackContext):
 
 dp = bot_updater.dispatcher
 dp.add_handler(CommandHandler('start', start_handler))
+dp.add_handler(CommandHandler('password', password_handler))
 dp.add_handler(MessageHandler(Filters.text, add_url))

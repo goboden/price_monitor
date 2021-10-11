@@ -1,5 +1,12 @@
+import secrets
+import string
+import hashlib
+import binascii
+
 users = []
 users_urls = {}
+
+salt = 'DCNGgKtG7fY4Z8b9RjE8AXSnQn05k17p'
 
 
 class UserExistsError(Exception):
@@ -26,3 +33,34 @@ def add_url(telegram_id, url, price):
         users_urls[telegram_id] = user_urls
     else:
         raise URLExistsError
+
+
+def generate_hash(password, salt):
+    pass_b = password.encode('utf-8')
+    salt_b = str.encode(salt)
+    key = hashlib.pbkdf2_hmac('sha256', pass_b, salt_b, 1000000)
+    hash = salt + binascii.hexlify(key).decode()
+    return hash
+
+
+def generate_password(telegram_id):
+    alphabet = string.ascii_letters + string.digits
+    new_password = ''.join(secrets.choice(alphabet) for i in range(32))
+    return new_password
+
+
+if __name__ == '__main__':
+    password = generate_password(1)
+    print(password)
+
+    hash1 = generate_hash(password, salt)
+    print(f'hash1={hash1}')
+
+    hash2 = generate_hash(password, salt)
+    print(f'hash2={hash2}')
+
+    hash3 = generate_hash(password, ('A' + salt)[:32])
+    print(f'hash3={hash3}')
+
+    print(hash1 == hash2)
+    print(hash1 == hash3)
