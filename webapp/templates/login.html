@@ -11,8 +11,8 @@
 <body>
     <div class="d-flex align-items-center min-vh-100">
         <div class="container">
-            <form action="" method="post" class="row justify-content-center">
-                <div class="col-5">
+            <form action="{{ url_for('process_login') }}" method="post" class="row justify-content-center">
+                <div class="col-6">
                     <div class="row">
                         <p class="text-center">Для получения пароля отправьте боту команду
                             <mark>/password</mark>.
@@ -25,8 +25,22 @@
                             <div class="input-group-text">
                                 {{ form.password.label }}
                             </div>
-                            {{ form.password() }} {{ form.submit }}
+                            {{ form.password() }}
+                            <div class="input-group-text">
+                                {{ form.remember() }}
+                            </div>
+                            <div class="input-group-text">
+                                {{ form.remember.label }}
+                            </div>
+                            {{ form.submit }}
                         </div>
+                    </div>
+                    <div class="row mt-2">
+                        {% with messages = get_flashed_messages() %} {% if messages %}
+                        <div class="alert alert-warning text-center" role="alert">
+                            {% for message in messages %} {{ message }}<br>{% endfor %}
+                        </div>
+                        {% endif %} {% endwith %}
                     </div>
                 </div>
             </form>
