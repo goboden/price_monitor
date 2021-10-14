@@ -56,4 +56,5 @@ class Telegram(db):
 
     id = Column(Integer, primary_key=True)
     username = Column(Integer, ForeignKey('users.username'), nullable=False)
-    tg_username = Column(String(64), nullable=False, unique=True)
+    telegram_id = Column(String(64), nullable=False, unique=True)
+    chat_id = Column(String(64), nullable=False)

@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 from config import DB_URI, SECRET_KEY
 import hashlib
-from database.service_functions import gen_password, log_to_file
+from database.service_functions import gen_password_hash, log_to_file
 import functools
 from database.exceptions import *
 
@@ -19,7 +19,7 @@ def exception_to_log(func):
             if func.__name__ == 'add_user':
                 log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-"*100}')
                 raise UserExistsError
-            elif func.__name__ == 'add_telegram_user':
+            elif func.__name__ == 'add_telegram_user_to_db':
                 log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-" * 100}')
                 raise TelegramUserExistsError
             elif func.__name__ == 'add_goods':
@@ -31,8 +31,6 @@ def exception_to_log(func):
             elif func.__name__ == 'update_password':
                 log_to_file(f'!!! {func.__name__} !!!\nОшибка:{ex}\n{"-" * 100}')
                 raise PasswordException
-
-        print(func.__name__)
     return in_func
 
 
@@ -55,9 +53,8 @@ def add_to_db(data):
     return con_db
 
 
-
 @add_to_db
-def add_user(username, password):
+def add_user_to_db(username, password='0000'):
     """
     id (pk), username, password
 
@@ -65,24 +62,24 @@ def add_user(username, password):
     :param password: В базу сохраняется хэш пароля.
     :return:
     """
-    result = User(username=username, password=gen_password(password))
-    return result
+    return User(username=username, password=gen_password_hash(password))
 
 
 @add_to_db
-def add_telegram_user(username, tg_username):
+def add_telegram_user_to_db(username, telegram_id, chat_id):
     """
     id (pk), username, tg_username
 
     :param username:
     :param tg_username:
+    :param chat_id:
     :return:
     """
-    return Telegram(username=username, tg_username=tg_username)
+    return Telegram(username=username, telegram_id=telegram_id, chat_id=chat_id)
 
 
 @add_to_db
-def add_goods(user_id, url, title, description, image, check_date):
+def add_goods_to_db(user_id, url,  check_date, title='', description='', image=''):
     """
         id (pk), user_id (fk), url, title, description, image, check_period.
 
@@ -99,7 +96,7 @@ def add_goods(user_id, url, title, description, image, check_date):
 
 
 @add_to_db
-def add_price(check_date, goods_id, price):
+def add_price_to_db(check_date, goods_id, price):
     """
     id (pk), goods_id (fk), check_date, price.
 
@@ -117,6 +114,7 @@ def connect_db():
     __session = session()
     return __session
 
+
 @exception_to_log
 def update_password(username, new_password):
     """
@@ -130,10 +128,10 @@ def update_password(username, new_password):
 
     if username == '':
         raise EmptyUsername("Имя пользователя не может быть пустым!")
-    elif session.query(User.username).filter_by(username=username).first() == None:
+    elif session.query(User.username).filter_by(username=username).first() is None:
         raise UserNotExistsError("Такого пользователя в базе нет!")
     elif new_password == '':
         raise PasswordException("Не стоит использовать пустой пароль!")
 
-    session.query(User).filter_by(username=username).update({'password': gen_password(password=new_password)})
+    session.query(User).filter_by(username=username).update({'password': gen_password_hash(password=new_password)})
     session.commit()
