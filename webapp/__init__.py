@@ -50,6 +50,7 @@ def create_app():
     @app.route('/goods')
     @login_required
     def goods():
-        return render_template('goods.html')
+        title = f'Товары ({current_user.name})'
+        return render_template('goods.html', page_title=title)
 
     return app
