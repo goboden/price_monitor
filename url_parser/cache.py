@@ -1,21 +1,22 @@
 from pathlib import Path
 import os
-from urllib.parse import urlparse
 from datetime import datetime
-
-
-def default_dir():
-    pafent_dir = Path(__file__).parent
-    cache_dir = pafent_dir.joinpath('cache')
-    if not cache_dir.exists():
-        os.mkdir(cache_dir)
-    return cache_dir
+from urllib.parse import urlparse
+from url_parser.exceptions import NotExistCacheError, TooOldCacheError
 
 
 class HTMLCache():
+    @classmethod
+    def default_dir(cls):
+        pafent_dir = Path(__file__).parent
+        cache_dir = pafent_dir.joinpath('cache')
+        if not cache_dir.exists():
+            os.mkdir(cache_dir)
+        return cache_dir
+
     def __init__(self):
         self.ttl = 1440
-        self.dir = default_dir()
+        self.dir = self.default_dir()
         self._url = None
         self._filename = None
         self._file_ttl = None
@@ -36,19 +37,23 @@ class HTMLCache():
         self._file_ttl = int(round(delta.seconds / 60, 0))
 
     def read(self):
-        html = None
-        
         if self._filename.exists():
             self._set_ttl()
             if self._file_ttl < self.ttl:
                 with open(self._filename, 'r', encoding='utf-8') as f:
                     html = f.read()
             else:
-                raise Exception('---2---')
+                raise TooOldCacheError
         else:
-            raise Exception('---1---')
+            raise NotExistCacheError
         return html
 
     def write(self, html):
+        # Add exceptions
         with open(self._filename, 'w', encoding='utf-8') as f:
             f.write(html)
+
+    def delete(self):
+        # Add exceptions
+        if self._filename.exists():
+            os.remove(self._filename)

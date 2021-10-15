@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+import validators
 from urllib.parse import urlparse
 import requests
 from bs4 import BeautifulSoup
 from url_parser.cache import HTMLCache
-from url_parser.exceptions import ParserNotFoundError, ParseError
+from url_parser.exceptions import BadURLError
+from url_parser.exceptions import ParserNotFoundError, ParseError, FetchError
+from url_parser.exceptions import NotExistCacheError, TooOldCacheError
 
 
 @dataclass
@@ -23,6 +26,8 @@ class Parser(ABC):
 
     @classmethod
     def create(cls, url) -> 'Parser':
+        if not validators.url(url):
+            raise BadURLError(url)
         parsed_url = urlparse(url)
         domain = parsed_url.netloc
         klass = cls._REGISTRY.get(domain)
@@ -66,15 +71,15 @@ class Parser(ABC):
             result.raise_for_status()
             html = result.text
             return html
-        except (requests.RequestException, ValueError) as e:
-            pass
+        except (requests.RequestException, ValueError):
+            raise FetchError
 
     def parse(self):
         if self.use_cache:
             self.cache.from_url(self.url)
             try:
                 self._html = self.cache.read()
-            except Exception as e:
+            except (NotExistCacheError, TooOldCacheError):
                 self._html = self.fetch()
                 self.cache.write(self._html)
         else:
@@ -89,7 +94,10 @@ class Parser(ABC):
                 data.description = self.get_description(soup)
                 data.image = self.get_image(soup)
                 self.data = data
-            except ParseError as e:
-                print('---PP')
+            except ParseError:
+                # log
+                self.cache.delete()
+                raise ParseError('')
         else:
-            print('---HH')
+            # log
+            raise FetchError
