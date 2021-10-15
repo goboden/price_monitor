@@ -1,5 +1,5 @@
 from url_parser.parser import Parser
-from url_parser.exceptions import ParseError
+from url_parser.exceptions import FetchError, ParseError
 from url_parser.secret import YANDEX_COOKIE_SPRAVKA
 import requests
 from bs4 import BeautifulSoup
@@ -25,8 +25,8 @@ class YandexParser(Parser):
             result.raise_for_status()
             html = result.text
             return html
-        except (requests.RequestException, ValueError) as e:
-            raise ParseError(f'{self}/get_html_from_request: {e}')
+        except (requests.RequestException, ValueError):
+            raise FetchError
 
     def get_price(self, soup: BeautifulSoup):
         try:

@@ -14,22 +14,20 @@ class HTMLCache():
             os.mkdir(cache_dir)
         return cache_dir
 
-    def __init__(self):
+    def __init__(self, url):
         self.ttl = 1440
-        self.dir = self.default_dir()
-        self._url = None
+        self._dir = self.default_dir()
+        self._url = url
         self._filename = None
         self._file_ttl = None
 
-    def from_url(self, url):
-        self._url = url
         self._set_filename()
 
     def _set_filename(self):
         parse_result = urlparse(self._url)
         filename = f'{parse_result.netloc}{parse_result.path}'
         filename = filename.translate(str.maketrans('./', '__')) + '.html'
-        self._filename = self.dir.joinpath(filename)
+        self._filename = self._dir.joinpath(filename)
 
     def _set_ttl(self):
         file_time = os.path.getmtime(self._filename)
@@ -37,7 +35,7 @@ class HTMLCache():
         self._file_ttl = int(round(delta.seconds / 60, 0))
 
     def read(self):
-        if self._filename.exists():
+        if self._filename and self._filename.exists():
             self._set_ttl()
             if self._file_ttl < self.ttl:
                 with open(self._filename, 'r', encoding='utf-8') as f:

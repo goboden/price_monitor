@@ -62,7 +62,7 @@ class Parser(ABC):
         self.url = url
         self._html = None
         self.use_cache = True
-        self.cache = HTMLCache()
+        self.cache = HTMLCache(url)
         self.data = None
 
     def fetch(self):
@@ -76,7 +76,6 @@ class Parser(ABC):
 
     def parse(self):
         if self.use_cache:
-            self.cache.from_url(self.url)
             try:
                 self._html = self.cache.read()
             except (NotExistCacheError, TooOldCacheError):
@@ -94,10 +93,10 @@ class Parser(ABC):
                 data.description = self.get_description(soup)
                 data.image = self.get_image(soup)
                 self.data = data
-            except ParseError:
+            except ParseError as e:
                 # log
                 self.cache.delete()
-                raise ParseError('')
+                raise e
         else:
             # log
             raise FetchError
