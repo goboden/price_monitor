@@ -2,8 +2,11 @@ from telegram.update import Update
 from telegram.ext.callbackcontext import CallbackContext
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telebot.secret import API_KEY
-from url_parser import get_parser, NotValidURLError, ParserNotFoundError
+from url_parser import parse
+from url_parser.exceptions import BadURLError, ParserNotFoundError
+from url_parser.exceptions import ParseError, FetchError
 import database
+from database.exceptions import TelegramUserExistsError
 
 bot_updater = Updater(API_KEY, use_context=True)
 bot = bot_updater.bot
@@ -20,7 +23,8 @@ def start_handler(update: Update, context: CallbackContext):
     try:
         database.add_user(user_name, telegram_id, chat_id)
         update.message.reply_text('Вы успешно зарегистрировались')
-    except database.UserExistsError:
+    # except database.UserExistsError:
+    except TelegramUserExistsError:
         update.message.reply_text('Вы уже ранее регистрировались')
 
 
@@ -34,19 +38,19 @@ def add_url(update: Update, context: CallbackContext):
     url = update.message.text
     telegram_id = update.message.from_user.id
     try:
-        parser = get_parser(url)
-        parser.get_html()
-        info = parser.get_info()
-        database.add_url(telegram_id, url, info['price'])
+        parsed_data = parse(url)
+        database.add_url(telegram_id, url, parsed_data.price)
         update.message.reply_text('Адрес успешно добавлен.')
-    except NotValidURLError:
+    except BadURLError:
         update.message.reply_text('Вы ввели некорректный адрес.')
     except ParserNotFoundError:
         update.message.reply_text('Этот магазин пока не поддерживается.')
-    except database.URLExistsError:
-        update.message.reply_text('Такой адрес уже есть.')
+    except (ParseError, FetchError):
+        update.message.reply_text('Что-то пошло не так ...')
+    #except database.URLExistsError:
+    #    update.message.reply_text('Такой адрес уже есть.')
     except Exception as e:
-        print(e)
+        print(e.message)
 
 
 dp = bot_updater.dispatcher
