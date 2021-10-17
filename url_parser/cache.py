@@ -5,11 +5,11 @@ from urllib.parse import urlparse
 from url_parser.exceptions import NotExistCacheError, TooOldCacheError
 
 
-class HTMLCache():
+class HTMLCache:
     @classmethod
     def default_dir(cls):
-        pafent_dir = Path(__file__).parent
-        cache_dir = pafent_dir.joinpath('cache')
+        parent_dir = Path(__file__).parent
+        cache_dir = parent_dir.joinpath('cache')
         if not cache_dir.exists():
             os.mkdir(cache_dir)
         return cache_dir

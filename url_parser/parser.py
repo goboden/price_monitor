@@ -11,7 +11,7 @@ from url_parser.exceptions import NotExistCacheError, TooOldCacheError
 
 
 @dataclass
-class ParsedData():
+class ParsedData:
     name: str
     description: str
     image: str
@@ -43,19 +43,19 @@ class Parser(ABC):
         return decorator
 
     @abstractmethod
-    def get_price(cls, soup):
+    def get_price(self, soup):
         pass
 
     @abstractmethod
-    def get_name(cls, soup):
+    def get_name(self, soup):
         pass
 
     @abstractmethod
-    def get_description(cls, soup):
+    def get_description(self, soup):
         pass
 
     @abstractmethod
-    def get_image(cls, soup):
+    def get_image(self, soup):
         pass
 
     def __init__(self, url):
