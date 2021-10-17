@@ -15,7 +15,7 @@ def get_goods_by_username(username):
 
 
 @get_from_db
-def get_user_by_password(password):
+def get_user_by_password_(password):
     password = gen_password_hash(password=password)
     return f"SELECT username FROM users WHERE password='{password}';"
 
