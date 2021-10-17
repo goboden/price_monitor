@@ -21,5 +21,5 @@ def log_to_file(text):
 def password_generator(password_length=15):
     alphabet = list('1234567890+-/*!&$#?=w@<>abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
     shuffle(alphabet)
-    password = ''.join([choice(alphabet) for x in range(password_length)])
+    password = ''.join([choice(alphabet) for _ in range(password_length)])
     return password
