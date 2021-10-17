@@ -2,9 +2,39 @@ import secrets
 import string
 import hashlib
 import binascii
+from flask_login import UserMixin
+
 
 users = []
+users_db = {}
 users_urls = {}
+
+
+class User(UserMixin):
+    def __init__(self, user_id, user_name):
+        self.id = user_id
+        self.name = user_name
+
+    def __repr__(self):
+        return f'id={self.id}, name={self.name}'
+
+
+def get_user_by_password(password):
+    if password == '1':
+        user = User('1000', 'Authenticated User')
+        users_db[user.id] = user
+        return user
+    elif password == '2':
+        user = User('2000', 'New User 2000')
+        users_db[user.id] = user
+        return user
+    return None
+
+
+def get_user_by_id(user_id):
+    user = users_db.get(user_id, None)
+    return user
+
 
 salt = 'DCNGgKtG7fY4Z8b9RjE8AXSnQn05k17p'
 
@@ -64,3 +94,4 @@ if __name__ == '__main__':
 
     print(hash1 == hash2)
     print(hash1 == hash3)
+
