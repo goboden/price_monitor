@@ -1,5 +1,6 @@
 url_parser/cache
 secret.py
+*.db
 
 .idea
 # Byte-compiled / optimized / DLL files
