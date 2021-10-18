@@ -1,5 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Float
+from flask_login import UserMixin
 import config
 
 
@@ -34,7 +35,7 @@ class Goods(db):
     check_date = Column(DateTime, nullable=False)
 
 
-class User(db):
+class User(db, UserMixin):
     """
     id (pk), username, password
     """
@@ -45,7 +46,8 @@ class User(db):
     password = Column(String(128))
 
     def set_password(self, password):
-        self.password = generate_password_hash(password)
+        # self.password = generate_password_hash(password)
+        pass
 
 
 class Telegram(db):

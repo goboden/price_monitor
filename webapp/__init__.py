@@ -3,7 +3,7 @@ from webapp.forms import LoginForm
 from flask_login import LoginManager, current_user
 from flask_login import login_user, logout_user, login_required
 import os
-from database import get_user_by_password
+from database import get_user_by_password, get_web_user_by_password, get_web_user_by_id
 from database.exceptions import UserNotExistsError
 
 
@@ -19,8 +19,7 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        return 1
-        #return get_user_by_id(user_id)
+        return get_web_user_by_id(user_id)
 
     @app.route('/')
     def index():
@@ -38,9 +37,10 @@ def create_app():
     def process_login():
         form = LoginForm()
         try:
-            user = get_user_by_password(form.password.data)
+            # user = get_user_by_password(form.password.data)
+            user = get_web_user_by_password(form.password.data)
         except UserNotExistsError:
-            user = None # ???
+            user = None  # ???
         if user:
             login_user(user, remember=form.remember.data)
             return redirect(url_for('index'))
@@ -55,7 +55,7 @@ def create_app():
     @app.route('/goods')
     @login_required
     def goods():
-        title = f'Товары ({current_user.name})'
+        title = f'Товары ({current_user.username})'
         return render_template('goods.html', page_title=title)
 
     return app
