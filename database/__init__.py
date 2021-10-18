@@ -55,19 +55,17 @@ def get_web_user_by_password(password):
     from sqlalchemy.orm import scoped_session, sessionmaker
     from config import DB_URI
     from database.service_functions import gen_password_hash
-    engine = create_engine(DB_URI, echo=False)
-    db_session = scoped_session(sessionmaker(bind=engine))
-    User.query = db_session.query_property()
+    engine = create_engine(DB_URI)
+    session = scoped_session(sessionmaker(bind=engine))
     hashed = gen_password_hash(password)
-    user = User.query.filter(User.password == hashed).first()
+    user = session.query(User).filter(User.password == hashed).first()
     return user
 
 
 def get_web_user_by_id(user_id):
     from sqlalchemy.orm import scoped_session, sessionmaker
     from config import DB_URI
-    engine = create_engine(DB_URI, echo=False)
-    db_session = scoped_session(sessionmaker(bind=engine))
-    User.query = db_session.query_property()
-    user = User.query.filter(User.id == user_id).first()
+    engine = create_engine(DB_URI)
+    session = scoped_session(sessionmaker(bind=engine))
+    user = session.query(User).filter(User.id == user_id).first()
     return user
