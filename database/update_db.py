@@ -1,56 +1,10 @@
 from database.models import db, User, Goods, Price, Telegram
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import IntegrityError
-from datetime import datetime
-from config import DB_URI, SECRET_KEY
-import hashlib
-from database.service_functions import gen_password_hash, log_to_file
-import functools
+from config import DB_URI
+from database.service_functions import gen_password_hash
 from database.exceptions import *
-
-
-def exception_to_log(func):
-
-    def in_func(*args, **kwargs):
-        try:
-            func(*args, **kwargs)
-        except Exception as ex:
-            if func.__name__ == 'add_user':
-                log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-"*100}')
-                raise UserExistsError
-            elif func.__name__ == 'add_telegram_user_to_db':
-                log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-" * 100}')
-                raise TelegramUserExistsError
-            elif func.__name__ == 'add_goods':
-                log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-" * 100}')
-                raise UrlIsEmpty
-            elif func.__name__ == 'add_price':
-                log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-" * 100}')
-                raise PriceException
-            elif func.__name__ == 'update_password':
-                log_to_file(f'!!! {func.__name__} !!!\nОшибка:{ex}\n{"-" * 100}')
-                raise PasswordException
-    return in_func
-
-
-def add_to_db(data):
-    """
-    Подключение к БД, добавление данных data, и запись данных в БД
-
-    :param data: функция, возвращающая объект для добавления в БД
-    :return:
-    """
-
-    @exception_to_log
-    @functools.wraps(data)
-    def con_db(*args, **kwargs):
-        engine = create_engine(DB_URI, echo=False)
-        session = sessionmaker(bind=engine)
-        __session = session()
-        __session.add(data(*args, **kwargs))
-        __session.commit()
-    return con_db
+from database.decorators import *
 
 
 @add_to_db
@@ -71,7 +25,7 @@ def add_telegram_user_to_db(username, telegram_id, chat_id):
     id (pk), username, tg_username
 
     :param username:
-    :param tg_username:
+    :param telegram_id:
     :param chat_id:
     :return:
     """

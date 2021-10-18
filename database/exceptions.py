@@ -14,8 +14,8 @@ class TelegramUserExistsError(Exception):
     """Пользователь уже есть в базе"""
 
 
-class UrlIsEmpty(Exception):
-    """Пустой URL не допустим"""
+class UrlError(Exception):
+    """Такой URL уже есть в базе"""
 
 
 class PriceException(Exception):
@@ -25,5 +25,9 @@ class PriceException(Exception):
 class PasswordException(Exception):
     """Что-то не то с пользователем. Смотри логи."""
 
+
 class NoGoodsError(Exception):
     """Нет товара с таким URL в базе"""
+
+class ResultIsEmpty(Exception):
+    """Ничего не найдено"""
