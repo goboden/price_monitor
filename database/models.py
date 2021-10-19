@@ -1,5 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Float
+from sqlalchemy.orm import relationship
 from flask_login import UserMixin
 
 
@@ -10,17 +11,18 @@ class User(Base, UserMixin):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
-    username = Column(String(64), index=True, unique=True)
+    name = Column(String(64), index=True, unique=True)
     password = Column(String(128))
+    telegram = relationship('Telegram', backref='user')
 
 
 class Telegram(Base):
     __tablename__ = 'telegram'
 
-    id = Column(Integer, primary_key=True)
-    username = Column(Integer, ForeignKey('users.username'), nullable=False)
-    telegram_id = Column(String(64), nullable=False, unique=True)
-    chat_id = Column(String(64), nullable=False)
+    id = Column(Integer, primary_key=True, nullable=False, unique=True)
+    chat_id = Column(Integer, nullable=False, unique=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    #user = relationship('User', back_populates='telegram')
 
 
 class Price(Base):

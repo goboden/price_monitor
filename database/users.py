@@ -3,17 +3,27 @@ from . import session
 from .exceptions import UserExistsError
 
 
-def add_user(username, telegram_id, chat_id):
-    user = session.query(User).filter_by(username=username).first()
-    if user:
+def add(name, telegram_id, chat_id):
+    user = session.query(User).filter_by(name=name).first()
+    if not user:
+        new_user = User(name=name)
+        telegram = Telegram(id=telegram_id, chat_id=chat_id)
+        new_user.telegram.append(telegram)
+        session.add(new_user)
+        session.commit()
+    else:
         raise UserExistsError
-    new_user = User(username=username)
-    # telegram = Telegram(username=username, telegram_id=telegram_id, chat_id=chat_id)
-    session.add(new_user)
-    # session.add(telegram)
-    session.commit()
 
 
-def get_user_by_id(user_id):
-    user = session.query(User).filter(User.id == user_id).first()
+def get_by_id(user_id):
+    user = session.query(User).filter_by(id=user_id).first()
     return user
+
+
+def get_by_teleram_id(telegram_id):
+    user = session.query(Telegram).filter_by(id=telegram_id).first().user
+    return user
+
+
+def get_by_password(password):
+    pass
