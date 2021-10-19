@@ -3,7 +3,8 @@ from webapp.forms import LoginForm
 from flask_login import LoginManager, current_user
 from flask_login import login_user, logout_user, login_required
 import os
-from database import get_user_by_password, get_web_user_by_password, get_web_user_by_id
+# from database import get_user_by_password
+from database import get_web_user_by_password, get_web_user_by_id
 from database.exceptions import UserNotExistsError
 
 

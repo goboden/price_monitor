@@ -75,7 +75,7 @@ def generate_hash(password, salt):
 
 def generate_password(telegram_id):
     alphabet = string.ascii_letters + string.digits
-    new_password = ''.join(secrets.choice(alphabet) for i in range(32))
+    new_password = ''.join(secrets.choice(alphabet) for _ in range(32))
     return new_password
 
 

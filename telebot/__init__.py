@@ -47,10 +47,6 @@ def add_url(update: Update, context: CallbackContext):
         update.message.reply_text('Этот магазин пока не поддерживается.')
     except (ParseError, FetchError):
         update.message.reply_text('Что-то пошло не так ...')
-    #except database.URLExistsError:
-    #    update.message.reply_text('Такой адрес уже есть.')
-    except Exception as e:
-        print(e.message)
 
 
 dp = bot_updater.dispatcher

@@ -1,27 +1,18 @@
-import config as cf
 import os
-
-database_name = 'test.db'
-db_filepath = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                           database_name)
-database_uri = 'sqlite:///' + db_filepath
-cf.DB_URI = database_uri
-
-
-from sqlalchemy import create_engine
-from database import add_user
-from database.exceptions import TelegramUserExistsError
-from database.models import db
+from database import engine, session
+from database.models import Base, User
+from database.users import add_user
+from database.exceptions import UserExistsError
 import pytest
 
 
 @pytest.fixture(scope='module')
 def prepare(request):
-    engine = create_engine(database_uri)
-    db.metadata.create_all(engine)
+    db_name = engine.url.database
+    Base.metadata.create_all(engine)
 
     def delete_database():
-        os.remove(db_filepath)
+        os.remove(db_name)
 
     request.addfinalizer(delete_database)
 
@@ -34,7 +25,21 @@ def test_create_user(prepare):
 
     add_user(user_name, user_telegram_id, user_chat_id)
 
-    with pytest.raises(TelegramUserExistsError):
+    with pytest.raises(UserExistsError):
         add_user(user_name, user_telegram_id, user_chat_id)
 
-    assert True
+
+    ''' with pytest.raises(TelegramUserExistsError):
+        add_user(user_name, user_telegram_id, user_chat_id)
+
+    assert True'''
+
+
+@pytest.mark.database
+def test_create_user1(prepare):
+    user_name = '@test_user'
+    user_telegram_id = 123456789
+    user_chat_id = 987654321
+
+    with pytest.raises(UserExistsError):
+        add_user(user_name, user_telegram_id, user_chat_id)
