@@ -4,12 +4,12 @@ from .exceptions import UserExistsError
 
 
 def add(name, telegram_id, chat_id):
-    user = session.query(User).filter_by(name=name).first()
-    if not user:
-        new_user = User(name=name)
-        telegram = Telegram(id=telegram_id, chat_id=chat_id)
-        new_user.telegram.append(telegram)
-        session.add(new_user)
+    telegram = session.query(Telegram).filter_by(id=telegram_id).first()
+    if not telegram:
+        telegram = Telegram(id=telegram_id, name=name, chat_id=chat_id)
+        user = User(name=name)
+        telegram.user = user
+        session.add(user)
         session.commit()
     else:
         raise UserExistsError
@@ -26,4 +26,15 @@ def get_by_teleram_id(telegram_id):
 
 
 def get_by_password(password):
-    pass
+    hashed = password
+    user = session.query(User).filter_by(password=hashed).first()
+    return user
+
+
+def new_password_from_telegram(telegram_id):
+    password = 'PASS'
+    hashed = password
+    user = session.query(Telegram).filter_by(id=telegram_id).first().user
+    user.password = hashed
+    session.commit()
+    return password

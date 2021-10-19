@@ -11,18 +11,20 @@ class User(Base, UserMixin):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(64), index=True, unique=True)
-    password = Column(String(128))
-    telegram = relationship('Telegram', backref='user')
+    name = Column(String(64))
+    password = Column(String(128), unique=True)
+    telegram = relationship('Telegram', back_populates='user', uselist=False)
 
 
 class Telegram(Base):
     __tablename__ = 'telegram'
 
-    id = Column(Integer, primary_key=True, nullable=False, unique=True)
-    chat_id = Column(Integer, nullable=False, unique=True)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(64))
+    chat_id = Column(Integer, nullable=False)
+    
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    #user = relationship('User', back_populates='telegram')
+    user = relationship('User', back_populates='telegram')
 
 
 class Price(Base):
