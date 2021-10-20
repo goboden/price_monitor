@@ -53,9 +53,22 @@ def create_app():
         return redirect(url_for('login'))
 
     @app.route('/goods')
-    @login_required
+    #@login_required
     def goods():
-        title = f'Товары ({current_user.username})'
-        return render_template('goods.html', page_title=title)
+        #title = f'Товары ({current_user.username})'
+        title = 'Товары'
+        goods_items = [
+            {
+                'name': 'G1',
+                'url': 'http://goods.com/g1'
+            },
+            {
+                'name': 'G2',
+                'url': 'http://goods.com/g2'
+            },
+        ]
+        return render_template('goods_table.html',
+                               page_title=title,
+                               goods_items=goods_items)
 
     return app

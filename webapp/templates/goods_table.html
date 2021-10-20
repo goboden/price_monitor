@@ -1,0 +1,21 @@
+{% extends "goods.html" %}
+
+{% block table %}
+<table id="data" class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Имя</th>
+            <th>Ссылка</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for goods_item in goods_items %}
+        <tr>
+            <td>{{ goods_item.name }}</td>
+            <td>{{ goods_item.url }}</td>
+            <td><button type="button" class="btn btn-outline-secondary">...</button></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
