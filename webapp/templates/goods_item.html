@@ -1,0 +1,16 @@
+{% extends "goods.html" %} {% block content %}
+<div class="container ">
+
+    <div class="row ">
+        <div class="col-3 ">
+            <img class="img w-100" src="{{ goods_item.image }} ">
+        </div>
+        <div class="col-9 ">
+            {{ goods_item.description }}
+        </div>
+    </div>
+    <div class="row text-center">
+        <a target="_blank" href=" {{ goods_item.url }} ">Страница товара в магазине</a>
+    </div>
+</div>
+{% endblock %}
