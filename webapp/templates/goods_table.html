@@ -1,15 +1,19 @@
-{% extends "goods.html" %} {% block content %}
+{% extends "goods.html" %}
+
+{% block content %}
 <table id="data" class="table table-striped table-bordered">
     <thead>
         <tr>
+            <th>№ п/п</th>
             <th>Наименование товара</th>
             <th>Ссылка страницу товара</th>
             <th>Текущая цена</th>
         </tr>
     </thead>
     <tbody>
-        {% for goods_item in goods_items %}
+        {% for num, goods_item in goods_enum %}
         <tr>
+            <td>{{ num + 1 }}</td>
             <td><a href=" {{ goods_item.page }} ">{{ goods_item.name }}</a></td>
             <td>{{ goods_item.url }}</td>
             <td>{{ goods_item.price }}</td>

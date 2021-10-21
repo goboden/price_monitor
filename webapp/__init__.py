@@ -59,9 +59,10 @@ def create_app():
         # title = f'Товары ({current_user.username})'
         title = 'Товары'
         goods_items = get_goods()
+        goods_enum = enumerate(goods_items)
         return render_template('goods_table.html',
                                page_title=title,
-                               goods_items=goods_items)
+                               goods_enum=goods_enum)
 
     @app.route('/goods/<goods_id>')
     # @login_required
@@ -75,6 +76,20 @@ def create_app():
                                page_title=title,
                                goods_item=goods_item)
 
+    @app.route('/prices/<goods_id>')
+    # @login_required
+    def prices(goods_id):
+        # title = f'Товары ({current_user.username})'
+        goods_item = get_goods_item()
+        goods_name = goods_item['name']
+        title = f'Цены {goods_id}: {goods_name}'
+
+        prices = {}
+
+        return render_template('goods_prices.html',
+                               page_title=title,
+                               prices=prices)
+
     return app
 
 
@@ -82,7 +97,7 @@ def get_goods():
     goods_items = []
     for i in range(50):
         goods_item = {
-            'name': f'Goods Item {i}',
+            'name': f'Start Collecting! Vanguard Space Marines {i}',
             'url':
             f'https://yandex.ru/search/?clid=2186621&text=bootstrap+table+column+width&lr=2&redircnt=1634815818.1',
             'page': f'/goods/{i}',

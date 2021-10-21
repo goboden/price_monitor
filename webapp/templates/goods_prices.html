@@ -1,0 +1,10 @@
+{% extends "goods.html" %}
+
+{% block menu %}
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="{{ url_for('goods') }}">Список товаров</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="{{ url_for('goods_item', goods_id=1) }}">Товар</a>
+    </li>{% endblock %} {% block content %}
+{% endblock %}

@@ -1,6 +1,10 @@
-{% extends "goods.html" %} {% block content %}
-<div class="container ">
+{% extends "goods.html" %}
 
+{% block menu %}
+<li class="nav-item">
+    <a class="nav-link active" aria-current="page" href="{{ url_for('goods') }}">Список товаров</a>
+</li>{% endblock %} {% block content %}
+<div class="container ">
     <div class="row ">
         <div class="col-3 ">
             <img class="img w-100" src="{{ goods_item.image }} ">
@@ -11,6 +15,10 @@
     </div>
     <div class="row text-center">
         <a target="_blank" href=" {{ goods_item.url }} ">Страница товара в магазине</a>
+    </div>
+
+    <div class="row text-center">
+        <a href=" {{ url_for('prices', goods_id=1) }} ">История цен</a>
     </div>
 </div>
 {% endblock %}
