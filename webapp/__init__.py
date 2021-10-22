@@ -70,7 +70,7 @@ def create_app():
         # title = f'Товары ({current_user.username})'
         goods_item = get_goods_item()
         goods_name = goods_item['name']
-        title = f'Товар {goods_id}: {goods_name}'
+        title = f'Товар {goods_name}'
 
         return render_template('goods_item.html',
                                page_title=title,
@@ -82,13 +82,14 @@ def create_app():
         # title = f'Товары ({current_user.username})'
         goods_item = get_goods_item()
         goods_name = goods_item['name']
-        title = f'Цены {goods_id}: {goods_name}'
-
-        prices = {}
+        title = f'История цен для {goods_name}'
+        prices = get_prices()
+        prices_enum = enumerate(prices)
 
         return render_template('goods_prices.html',
                                page_title=title,
-                               prices=prices)
+                               goods_item=goods_item,
+                               prices_enum=prices_enum)
 
     return app
 
@@ -136,3 +137,15 @@ def get_goods_item():
 Для сборки рекомендуем использовать специальные инструменты и клей, а окрашивать миниатюры высококачественными акриловыми красками.
 '''
     }
+
+
+def get_prices():
+    from datetime import datetime
+    prices = []
+    for i in range(50):
+        price = {
+            'date': datetime.now(),
+            'price': 5859.0
+        }
+        prices.append(price)
+    return prices
