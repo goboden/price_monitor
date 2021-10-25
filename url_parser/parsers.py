@@ -1,6 +1,6 @@
 from url_parser.parser import Parser
 from url_parser.exceptions import FetchError, ParseError
-from url_parser.secret import YANDEX_COOKIE_SPRAVKA
+from url_parser.secret import YANDEX_COOKIE_SPRAVKA, YANDEX_UID
 import requests
 from bs4 import BeautifulSoup
 
@@ -19,6 +19,7 @@ class YandexParser(Parser):
         cookies = {
             'spravka':
             YANDEX_COOKIE_SPRAVKA,
+            'yandexuid': YANDEX_UID
         }
         try:
             result = requests.get(self.url, headers=headers, cookies=cookies)
@@ -67,7 +68,9 @@ class HobbyGamesParser(Parser):
 
     def get_price(self, soup: BeautifulSoup) -> float:
         try:
-            div = soup.find('div', class_='price price-new')
+            div = soup.find('div', class_='price')
+            if not div:
+                div = soup.find('div', class_='price price-new')
             price_text = div.text
             price_text = ''.join([s for s in price_text if s.isdigit()])
             price = float(price_text)
