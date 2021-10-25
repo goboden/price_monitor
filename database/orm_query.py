@@ -1,9 +1,9 @@
 from database.exceptions import *
 from sqlalchemy import create_engine
-from database.models import User, Goods, Telegram
+from database.models import User, Goods, Telegram, Price
 from sqlalchemy.orm import scoped_session, sessionmaker
 from config import DB_URI
-from database.service_functions import gen_password_hash
+from service_functions import gen_password_hash
 
 
 def connect_to_db():
@@ -36,3 +36,9 @@ def get_user_id_by_telegram_id(telegram_id):
     username = session.query(Telegram.username).filter_by(telegram_id=telegram_id).first()[0]
     user_id = session.query(User.id).filter_by(username=username).first()[0]
     return user_id
+
+
+def get_price_by_goods_id(goods_id):
+    session = connect_to_db()
+    price = session.query(Price).filter(Price.goods_id == goods_id).all()[-1]
+    return price

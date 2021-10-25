@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from config import DB_URI
-from database.service_functions import log_to_file
+from service_functions import log_to_file
 from database.exceptions import *
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -54,7 +54,6 @@ def exception_to_log(func):
             elif func.__name__ == 'update_password':
                 log_to_file(f'!!! {func.__name__} !!!\nОшибка:{ex}\n{"-" * 100}')
                 raise PasswordException
-        return result
     return in_func
 
 
