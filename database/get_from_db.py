@@ -1,4 +1,4 @@
-from database.service_functions import gen_password_hash
+from service_functions import gen_password_hash
 from database.exceptions import *
 from database.decorators import *
 

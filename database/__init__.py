@@ -7,8 +7,9 @@ from config import PASSWORD_LENGHT
 from database.update_db import add_user_to_db, add_telegram_user_to_db, \
     add_price_to_db, add_goods_to_db, update_password
 from database.get_from_db import get_hash_by_user, get_goods_id_by_url, get_user_by_password_
-from database.service_functions import gen_password_hash, log_to_file, password_generator
+from service_functions import gen_password_hash, log_to_file, password_generator
 from database.models import User
+# import database.orm_query
 
 
 def check_password(username, password):
@@ -48,8 +49,8 @@ def add_url(telegram_id, url, price):
 
 
 def get_user_by_password(password):
-    return get_user_by_password_(password)[0][0]
-
+    return get_from_db.get_user_by_password_(password)[0][0]
+    
 
 def get_web_user_by_password(password):
     from sqlalchemy.orm import scoped_session, sessionmaker

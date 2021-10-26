@@ -2,7 +2,7 @@ from database.models import db, User, Goods, Price, Telegram
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from config import DB_URI
-from database.service_functions import gen_password_hash
+from service_functions import gen_password_hash
 from database.exceptions import *
 from database.decorators import *
 
@@ -88,4 +88,15 @@ def update_password(username, new_password):
         raise PasswordException("Не стоит использовать пустой пароль!")
 
     session.query(User).filter_by(username=username).update({'password': gen_password_hash(password=new_password)})
+    session.commit()
+
+def update_check_date(id, new_date):
+    """
+
+    :param id:
+    :param new_date:
+    :return:
+    """
+    session = connect_db()
+    session.query(Price).filter_by(id=id).update({'check_date': new_date})
     session.commit()
