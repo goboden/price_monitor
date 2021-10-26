@@ -1,0 +1,37 @@
+{% extends "goods.html" %} {% block menu %}
+<li class="nav-item">
+    <a class="nav-link active" aria-current="page" href="{{ url_for('goods') }}">Назад к списку товаров</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" aria-current="page" href="{{ url_for('goods_item', goods_id=1) }}">Назад к странице товара</a>
+</li>{% endblock %} {% block content %}
+<div class="container">
+    <div class="row">
+        <h1 class="text-center">
+            {{ goods_item.name }}
+        </h1>
+    </div>
+
+    <div class="row">
+        <table id="data" class="table table-striped table-bordered ">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Дата</th>
+                    <th>Цена</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for num, price in prices_enum %}
+                <tr>
+                    <td>{{ num + 1 }}</td>
+                    <td>{{ price.date }}</td>
+                    <td>{{ price.price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

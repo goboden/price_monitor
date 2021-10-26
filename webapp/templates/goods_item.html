@@ -1,0 +1,33 @@
+{% extends "goods.html" %} {% block menu %}
+<li class="nav-item">
+    <a class="nav-link active" aria-current="page" href="{{ url_for('goods') }}">Назад к списку товаров</a>
+</li>{% endblock %} {% block content %}
+<div class="container ">
+    <div class="row">
+        <h1 class="text-center p-2">{{ goods_item.name }}</h1>
+    </div>
+    <div class="row ">
+        <div class="col-3 ">
+            <div class="row ">
+                <img class="img w-100" src="{{ goods_item.image }} ">
+            </div>
+            <div class="row text-center">
+                <a target="_blank" href=" {{ goods_item.url }} ">Страница товара в магазине</a>
+            </div>
+        </div>
+        <div class="col-7 ">
+            <p class="text-left">
+                {{ goods_item.description }}
+            </p>
+        </div>
+        <div class="col-2">
+            <div class="row">
+                <h1 class="text-center">{{ goods_item.price }}</h1>
+            </div>
+            <div class="row text-center">
+                <a href=" {{ url_for('prices', goods_id=1) }} ">История цен</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
