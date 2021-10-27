@@ -16,7 +16,7 @@
         </ul>
         <ul class="nav">
             <li class="nav-item ">
-                <div class="nav-link disabled px-3">Sample User</div>
+                <div class="nav-link disabled px-3">{{ current_user.username }}</div>
             </li>
             <li class="nav-item">
                 <a class="nav-link px-3 " href="{{ url_for( 'logout') }} ">Выйти</a>
