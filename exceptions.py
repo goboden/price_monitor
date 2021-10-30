@@ -22,5 +22,5 @@ class AddGoodsError(Exception):
     """Ошибка при добавлении товара"""
 
 
-class GoodsNotExist(Exception):
+class GoodsNotExists(Exception):
     """Видимо url не верный"""

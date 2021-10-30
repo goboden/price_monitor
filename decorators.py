@@ -40,7 +40,7 @@ def exception_to_log(func):
                 raise AddGoodsError
             if func.__name__ == 'update_urls':
                 log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-"*100}')
-                raise GoodsNotExist
+                raise GoodsNotExists
             else:
                 log_to_file(f' !!! {func.__name__} !!!\nException:{ex}\n{"-" * 100}')
     return in_func
