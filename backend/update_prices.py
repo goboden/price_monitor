@@ -1,5 +1,3 @@
-import inspect
-
 from database import get_goods, price_update
 from url_parser import parse
 from decorators import exception_to_log

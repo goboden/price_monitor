@@ -5,4 +5,4 @@ __pycache__/
 /test*.py
 *.log
 /url_parser/
-/price_202110302002.sql
+/*.sql

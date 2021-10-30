@@ -44,7 +44,7 @@ def check_password(username, password):
 @exception_to_log
 def generate_password(telegram_id):
     """
-
+        Update password in database and return generated password
     :param telegram_id:
     :return: generated password
     """
