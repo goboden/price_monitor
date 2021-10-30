@@ -1,5 +1,5 @@
 get_goods() - возвращает список всех объектов (товаров)
-price_update(goods: object, new_price: float) - обновляет цену товара
+price_update(goods: object, new_price: float) - обновляет цену товара. Если цена не изменилась, обновляет дату на последней записи. Если цена изменилась, добавляет новую цену в БД.
 add_goods(user: object, url, title, description, image_url, price) - добавляет товар в БД, если товар уже есть, то товар не добавляется, добавляется связь товара с пользователем
 get_goods_by_user(username) - возвращает список объектов (товаров) по имени пользователя
 get_user_by_password(password) - возвращает пользователя по паролю
