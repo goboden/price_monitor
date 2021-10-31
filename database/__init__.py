@@ -1,8 +1,6 @@
-import random
 from hashlib import scrypt
 from random import shuffle, choice
-import config
-from config import DB_URI
+from config import DB_URI, PASSWORD_LENGHT, SALT
 from sqlalchemy import create_engine
 from .models import db, User, Telegram, Goods, Price
 from sqlalchemy.orm import Session
@@ -35,7 +33,7 @@ def check_password(username, password):
     """
     hash_from_db = session.query(User).filter(User.username == username).first().password
     telegram_id = session.query(User).filter(User.username == username).first().telegram[0].id
-    if generate_hash(password, telegram_id) == hash_from_db:
+    if generate_hash(password) == hash_from_db:
         return True
     else:
         return False
@@ -48,10 +46,10 @@ def generate_password(telegram_id):
     :param telegram_id:
     :return: generated password
     """
-    password = password_generator(config.PASSWORD_LENGHT)
+    password = password_generator(PASSWORD_LENGHT)
     username = session.query(Telegram).filter(Telegram.telegram_id == telegram_id).first().user.username
     session.query(User).filter_by(username=username).update({'password':
-                                                            generate_hash(password=password, salt=telegram_id)})
+                                                            generate_hash(password=password)})
     session.commit()
     return password
 
@@ -65,7 +63,7 @@ def password_generator(password_length=15):
 
 
 @exception_to_log
-def generate_hash(password, salt):
+def generate_hash(password, salt=SALT):
     return scrypt(str(password).encode(), salt=str(salt).encode(), n=8, r=256, p=4, dklen=64).hex()
 
 
@@ -76,7 +74,7 @@ def get_user_by_password(password):
     :param password:
     :return:
     """
-    return session.query(User).filter(User.password == password).first()
+    return session.query(User).filter(User.password == generate_hash(password)).first()
 
 
 @exception_to_log
@@ -111,7 +109,7 @@ def add_user(username, telegram_id, chat_id, password):
     """
     user = User(
         username=username,
-        password=generate_hash(password=password, salt=telegram_id)
+        password=generate_hash(password=password)
     )
     session.add(user)
     session.flush()
