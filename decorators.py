@@ -25,10 +25,10 @@ def exception_to_log(func):
                 raise PriceException
             if func.__name__ == 'get_user_by_password':
                 log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-"*100}')
-                raise UserNotExistsError
+                raise UserOrGoodsNotExistsError
             elif func.__name__ == 'get_user_by_id':
                 log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-"*100}')
-                raise UserNotExistsError
+                raise UserOrGoodsNotExistsError
             elif func.__name__ == 'get_goods_by_user':
                 log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-" * 100}')
                 raise UserOrGoodsNotExistsError

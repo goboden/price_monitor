@@ -3,7 +3,7 @@
     <a class="nav-link active" aria-current="page" href="{{ url_for('goods') }}">Назад к списку товаров</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link active" aria-current="page" href="{{ url_for('goods_item', goods_id=1) }}">Назад к странице товара</a>
+    <a class="nav-link active" aria-current="page" href="{{ url_for('goods_item', goods_id=goods_item.id) }}">Назад к странице товара</a>
 </li>{% endblock %} {% block content %}
 <div class="container">
     <div class="row">

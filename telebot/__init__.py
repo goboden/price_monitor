@@ -6,7 +6,7 @@ from url_parser import parse
 from url_parser.exceptions import BadURLError, ParserNotFoundError
 from url_parser.exceptions import ParseError, FetchError
 import database
-from database.exceptions import TelegramUserExistsError
+from exceptions import UserExistsError, URLExistsError
 
 bot_updater = Updater(API_KEY, use_context=True)
 bot = bot_updater.bot
@@ -23,8 +23,7 @@ def start_handler(update: Update, context: CallbackContext):
     try:
         database.add_user(user_name, telegram_id, chat_id)
         update.message.reply_text('Вы успешно зарегистрировались')
-    # except database.UserExistsError:
-    except TelegramUserExistsError:
+    except UserExistsError:
         update.message.reply_text('Вы уже ранее регистрировались')
 
 
@@ -39,16 +38,22 @@ def add_url(update: Update, context: CallbackContext):
     telegram_id = update.message.from_user.id
     try:
         parsed_data = parse(url)
-        database.add_url(telegram_id, url, parsed_data.price)
-        update.message.reply_text('Адрес успешно добавлен.')
+        database.add_url(telegram_id,
+                         url,
+                         parsed_data.name,
+                         parsed_data.description,
+                         parsed_data.image,
+                         parsed_data.price)
+        reply_text = f'Адрес успешно добавлен. {parsed_data.name}, цена {parsed_data.price}'
+        update.message.reply_text(reply_text)
     except BadURLError:
         update.message.reply_text('Вы ввели некорректный адрес.')
     except ParserNotFoundError:
         update.message.reply_text('Этот магазин пока не поддерживается.')
     except (ParseError, FetchError):
         update.message.reply_text('Что-то пошло не так ...')
-    #except database.URLExistsError:
-    #    update.message.reply_text('Такой адрес уже есть.')
+    except URLExistsError:
+        update.message.reply_text('Такой адрес уже есть.')
     except Exception as e:
         print(e.message)
 

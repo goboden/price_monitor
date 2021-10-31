@@ -2,7 +2,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import create_engine
 from config import DB_URI
 from database.models import db, User, Telegram, Goods, Price
-from service_functions import gen_password_hash
+from database import generate_hash
 from datetime import datetime, timedelta
 
 
@@ -24,6 +24,7 @@ def add_users():
     for user in users:
         add_user(*user)
 
+
 def add_goods(goods):
     for goods_item in goods:
         add_goods_item(*goods_item)
@@ -31,8 +32,8 @@ def add_goods(goods):
 
 def add_user(id, name, telegram_id, chat_id, password):
     print(f'{id}, {name}, {telegram_id}, {chat_id}, {password}')
-    telegram = Telegram(telegram_id=telegram_id, username=name, chat_id=chat_id)
-    user = User(id=id, username=name, password=gen_password_hash(password))
+    telegram = Telegram(telegram_id=telegram_id, chat_id=chat_id)
+    user = User(id=id, username=name, password=generate_hash(password))
     session.add(telegram)
     session.add(user)
     session.commit()
@@ -40,18 +41,21 @@ def add_user(id, name, telegram_id, chat_id, password):
 
 def add_goods_item(id, user_id, title, url, image, description, price):
     print(f'{id}, {user_id}, {title}, {price}')
-    goods_item = Goods(id=id,
-                       user_id=user_id,
-                       title=title,
-                       url=url,
-                       image=image,
-                       description=description,
-                       check_date=datetime.now())
+
+    user = session.query(User).filter_by(id=user_id).first()
+    goods_item = session.query(Goods).filter_by(url=url).first()
+    if not goods_item:
+        goods_item = Goods(id=id,
+                        title=title,
+                        url=url,
+                        image=image,
+                        description=description)
+    goods_item.users.append(user)
     session.add(goods_item)
     for minutes in range(1, 10):
-        price_item = Price(goods_id=id,
-                           check_date=datetime.now() - timedelta(minutes=minutes),
+        price_item = Price(check_date=datetime.now() - timedelta(minutes=minutes),
                            price=price)
+        price_item.goods = goods_item
         session.add(price_item)
     session.commit()
 
@@ -95,14 +99,14 @@ goods = (
         (6,
          2,
          'Warhammer 40,000: Recruit Edition',
-         'https://hobbygames.ru/warhammer-40000-recruit-edition1',
+         'https://hobbygames.ru/warhammer-40000-recruit-edition',
          'https://hobbygames.cdnvideo.ru/image/cache/hobbygames_beta/data/Games_Workshop_New/Warhammer_40k/Starter/WH40k_Recruit_Edition_Starter-1024x1024-wm.jpg',
          'Описание',
          3176.0),
         (7,
          3,
          'Warhammer 40,000: Recruit Edition',
-         'https://hobbygames.ru/warhammer-40000-recruit-edition2',
+         'https://hobbygames.ru/warhammer-40000-recruit-edition',
          'https://hobbygames.cdnvideo.ru/image/cache/hobbygames_beta/data/Games_Workshop_New/Warhammer_40k/Starter/WH40k_Recruit_Edition_Starter-1024x1024-wm.jpg',
          'Описание',
          3176.0),

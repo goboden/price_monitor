@@ -42,6 +42,7 @@ def create_app():
             user = get_user_by_password(form.password.data)
         except UserOrGoodsNotExistsError:
             user = None  # ???
+
         if user:
             login_user(user, remember=form.remember.data)
             return redirect(url_for('index'))

@@ -6,6 +6,7 @@ from flask_login import UserMixin
 
 db = declarative_base()
 
+
 user_goods = Table('user_goods', db.metadata,
                    Column('user_id', Integer(), ForeignKey("users.id")),
                    Column('goods_id', Integer(), ForeignKey("goods.id"))
@@ -18,7 +19,7 @@ class User(db, UserMixin):
     id = Column(Integer, primary_key=True)
     username = Column(String(64), index=True, unique=True)
     password = Column(String(128))
-    goods = relationship("Goods", secondary=user_goods, back_populates="user")
+    goods = relationship("Goods", secondary=user_goods, back_populates="users")
 
 
 class Telegram(db):
@@ -41,8 +42,8 @@ class Goods(db):
     description = Column(String, nullable=False)
     image = Column(String, nullable=False)
 
-    price = relationship("Price", back_populates="goods")
-    user = relationship("User", secondary=user_goods, back_populates="goods")
+    prices = relationship("Price", back_populates="goods")
+    users = relationship("User", secondary=user_goods, back_populates="goods")
 
 
 class Price(db):
@@ -53,4 +54,4 @@ class Price(db):
     price = Column(Float, nullable=False)
     goods_id = Column(Integer, ForeignKey('goods.id'))
 
-    goods = relationship("Goods", back_populates="price")
+    goods = relationship("Goods", back_populates="prices")
