@@ -1,57 +1,194 @@
-import datetime
-from database.exceptions import *
+import random
+from hashlib import scrypt
+from random import shuffle, choice
+import config
+from config import DB_URI
 from sqlalchemy import create_engine
-from random import random
-import database.models
-from config import PASSWORD_LENGHT
-from database.update_db import add_user_to_db, add_telegram_user_to_db, \
-    add_price_to_db, add_goods_to_db, update_password
-from database.get_from_db import get_hash_by_user, get_goods_id_by_url, get_user_id_by_telegram_id
-from database.get_from_db import get_user_by_password_, get_username_by_telegram_id
-from service_functions import gen_password_hash, log_to_file, password_generator
-from database.models import Price, User, Goods
-# import database.orm_query
+from .models import db, User, Telegram, Goods, Price
+from sqlalchemy.orm import Session
+from datetime import datetime
+from sqlalchemy.exc import *
+from decorators import exception_to_log
 
 
+engine = create_engine(DB_URI)
+session = Session(bind=engine)
+
+
+@exception_to_log
+def create_db():
+    db.metadata.create_all(engine)
+
+
+@exception_to_log
+def drop_db():
+    db.metadata.drop_all(engine)
+
+
+@exception_to_log
 def check_password(username, password):
-    hash_from_db = get_hash_by_user(username)[0][0]
-    if gen_password_hash(password) == hash_from_db:
+    """
+
+    :param username:
+    :param password:
+    :return:
+    """
+    hash_from_db = session.query(User).filter(User.username == username).first().password
+    telegram_id = session.query(User).filter(User.username == username).first().telegram[0].id
+    if generate_hash(password, telegram_id) == hash_from_db:
         return True
     else:
         return False
 
 
-def add_user(username, telegram_id, chat_id):
-    add_user_to_db(username=username)
-    add_telegram_user_to_db(username=username, telegram_id=telegram_id, chat_id=chat_id)
-
-
+@exception_to_log
 def generate_password(telegram_id):
-    password = password_generator(PASSWORD_LENGHT)
-    username = get_username_by_telegram_id(telegram_id)[0][0]
-    update_password(username=username, new_password=password)
+    """
+        Update password in database and return generated password
+    :param telegram_id:
+    :return: generated password
+    """
+    password = password_generator(config.PASSWORD_LENGHT)
+    username = session.query(Telegram).filter(Telegram.telegram_id == telegram_id).first().user.username
+    session.query(User).filter_by(username=username).update({'password':
+                                                            generate_hash(password=password, salt=telegram_id)})
+    session.commit()
     return password
 
 
+@exception_to_log
+def password_generator(password_length=15):
+    alphabet = list('1234567890+-/*!&$#?=w@<>abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    shuffle(alphabet)
+    password = ''.join([choice(alphabet) for _ in range(password_length)])
+    return password
+
+
+@exception_to_log
 def generate_hash(password, salt):
-    return gen_password_hash(password=password, salt=salt)
+    return scrypt(str(password).encode(), salt=str(salt).encode(), n=8, r=256, p=4, dklen=64).hex()
 
 
-def add_url(telegram_id, url, price):
-    if url == '':
-        log_to_file(f' !!! add_url !!!\nОшибка: URL не может быть пустым\n{"-" * 100}')
-        raise UrlError('URL не может быть пустым')
-
-    check_date = datetime.datetime.now()
-    user_id = get_user_id_by_telegram_id(telegram_id=telegram_id)[0][0]
-    add_goods_to_db(user_id=user_id, url=url, check_date=check_date)
-    goods_id = get_goods_id_by_url(url)[0][0]
-    add_price_to_db(check_date=check_date, goods_id=goods_id, price=price)
-
-
+@exception_to_log
 def get_user_by_password(password):
-    return get_user_by_password_(password)[0][0]
+    """
+
+    :param password:
+    :return:
+    """
+    return session.query(User).filter(User.password == password).first()
+
+
+@exception_to_log
+def get_user_by_id(user_id):
+    """
+
+    :param user_id:
+    :return:
+    """
+    return session.query(User).filter(User.id == user_id).first()
+
+
+@exception_to_log
+def get_goods_by_user(username):
+    """
+
+    :param username:
+    :return:
+    """
+    return session.query(User).filter(User.username == username).first().goods
+
+
+@exception_to_log
+def add_user(username, telegram_id, chat_id, password):
+    """
+
+    :param username:
+    :param telegram_id:
+    :param chat_id:
+    :param password:
+    :return:
+    """
+    user = User(
+        username=username,
+        password=generate_hash(password=password, salt=telegram_id)
+    )
+    session.add(user)
+    session.flush()
+
+    telegram = Telegram(
+        telegram_id=telegram_id,
+        chat_id=chat_id,
+        user_id=user.id
+    )
+    session.add(telegram)
+    session.commit()
+
+
+@exception_to_log
+def add_goods(user: object, url, title, description, image_url, price):
+    """
+
+    :param user:
+    :param url:
+    :param title:
+    :param description:
+    :param image_url:
+    :param price:
+    :return:
+    """
+    goods_exist = (session.query(Goods).filter(Goods.url == url).first() is None)
+
+    if goods_exist:
+        goods = Goods(
+            url=url,
+            title=title,
+            description=description,
+            image=image_url,
+        )
+        goods.user.append(user)
+        session.add(goods)
+        session.flush()
+
+        price = Price(
+            check_date=datetime.now(),
+            price=price,
+            goods_id=goods.id
+        )
+        session.add(price)
+        session.commit()
+    else:
+        goods = session.query(Goods).filter(Goods.url == url).first()
+        user.goods.append(goods)
+        session.add(user)
+        session.commit()
+
+
+@exception_to_log
+def price_update(goods: object, new_price: float):
+    """
+
+    :param goods:
+    :param new_price:
+    :return:
+    """
+    if goods.price[-1].price != float(new_price):
+        price = Price(
+            check_date=datetime.now(),
+            price=new_price,
+            goods_id=goods.id
+        )
+        session.add(price)
+    else:
+        goods.price[-1].check_date = datetime.now()
     
+    session.commit()
+
+
+@exception_to_log
+def get_goods():
+    return session.query(Goods).all()
+
 
 def get_web_user_by_password(password):
     from sqlalchemy.orm import scoped_session, sessionmaker

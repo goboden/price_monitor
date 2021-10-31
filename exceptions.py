@@ -2,20 +2,12 @@ class UserExistsError(Exception):
     """Пользователь уже есть в базе"""
 
 
-class UserNotExistsError(Exception):
-    """Пользователя нет в базе"""
-
-
-class EmptyUsername(Exception):
-    """Имя пользователя пустое"""
+class UserOrGoodsNotExistsError(Exception):
+    """Товара нет в базе или у пользователя нет товаров"""
 
 
 class TelegramUserExistsError(Exception):
     """Пользователь уже есть в базе"""
-
-
-class UrlError(Exception):
-    """Такой URL уже есть в базе"""
 
 
 class PriceException(Exception):
@@ -26,8 +18,9 @@ class PasswordException(Exception):
     """Что-то не то с пользователем. Смотри логи."""
 
 
-class NoGoodsError(Exception):
-    """Нет товара с таким URL в базе"""
+class AddGoodsError(Exception):
+    """Ошибка при добавлении товара"""
 
-class ResultIsEmpty(Exception):
-    """Ничего не найдено"""
+
+class GoodsNotExists(Exception):
+    """Видимо url не верный"""
