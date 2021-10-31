@@ -1,6 +1,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Table, Integer, String, DateTime, Float, ForeignKey
 from sqlalchemy.orm import relationship
+from flask_login import UserMixin
 
 
 db = declarative_base()
@@ -11,7 +12,7 @@ user_goods = Table('user_goods', db.metadata,
                    )
 
 
-class User(db):
+class User(db, UserMixin):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)

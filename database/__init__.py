@@ -79,6 +79,14 @@ def get_user_by_password(password):
     return session.query(User).filter(User.password == password).first()
 
 
+''' OLD
+def get_web_user_by_password(password):
+    hashed = gen_password_hash(password)
+    user = session.query(User).filter(User.password == hashed).first()
+    return user
+'''
+
+
 @exception_to_log
 def get_user_by_id(user_id):
     """
@@ -190,47 +198,16 @@ def get_goods():
     return session.query(Goods).all()
 
 
-def get_web_user_by_password(password):
-    from sqlalchemy.orm import scoped_session, sessionmaker
-    from config import DB_URI
-    from service_functions import gen_password_hash
-    engine = create_engine(DB_URI)
-    session = scoped_session(sessionmaker(bind=engine))
-    hashed = gen_password_hash(password)
-    user = session.query(User).filter(User.password == hashed).first()
-    return user
-
-
-def get_web_user_by_id(user_id):
-    from sqlalchemy.orm import scoped_session, sessionmaker
-    from config import DB_URI
-    engine = create_engine(DB_URI)
-    session = scoped_session(sessionmaker(bind=engine))
-    user = session.query(User).filter(User.id == user_id).first()
-    return user
-
-
 def get_user_goods(user_id):
-    from sqlalchemy.orm import scoped_session, sessionmaker
-    from config import DB_URI
-    engine = create_engine(DB_URI)
-    session = scoped_session(sessionmaker(bind=engine))
     goods = session.query(Goods).filter_by(user_id=user_id)
     return goods
 
 
 def get_goods_item(goods_id):
-    from sqlalchemy.orm import scoped_session, sessionmaker
-    from config import DB_URI
-    engine = create_engine(DB_URI)
-    session = scoped_session(sessionmaker(bind=engine))
     goods = session.query(Goods).filter_by(id=goods_id).first()
     return goods
 
+
 def get_goods_prices(goods_id):
-    from sqlalchemy.orm import scoped_session, sessionmaker
-    from config import DB_URI
-    engine = create_engine(DB_URI)
-    session = scoped_session(sessionmaker(bind=engine))
     prices = session.query(Price).filter_by(goods_id=goods_id)
     return prices

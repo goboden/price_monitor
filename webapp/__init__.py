@@ -3,9 +3,9 @@ from webapp.forms import LoginForm
 from flask_login import LoginManager, current_user
 from flask_login import login_user, logout_user, login_required
 import os
-from database import get_web_user_by_password, get_web_user_by_id
+from database import get_user_by_password, get_user_by_id
 from database import get_user_goods, get_goods_item, get_goods_prices
-from database.exceptions import UserNotExistsError
+from exceptions import UserOrGoodsNotExistsError
 
 
 def create_app():
@@ -20,7 +20,7 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        return get_web_user_by_id(user_id)
+        return get_user_by_id(user_id)
 
     @app.route('/')
     def index():
@@ -39,8 +39,8 @@ def create_app():
         form = LoginForm()
         try:
             # user = get_user_by_password(form.password.data)
-            user = get_web_user_by_password(form.password.data)
-        except UserNotExistsError:
+            user = get_user_by_password(form.password.data)
+        except UserOrGoodsNotExistsError:
             user = None  # ???
         if user:
             login_user(user, remember=form.remember.data)
