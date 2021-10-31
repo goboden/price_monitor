@@ -14,3 +14,4 @@ def update_urls():
     for goods in all_goods:
         price = parse(goods.url, no_cache=True).price
         price_update(goods=goods, new_price=price)
+        print('Updated:', goods.title, 'Price:', price)
