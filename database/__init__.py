@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from datetime import datetime
 from sqlalchemy.exc import *
 from decorators import exception_to_log
-from exceptions import URLExistsError
+from exceptions import URLExistsError, TelegramUserNotExistsError
 
 
 engine = create_engine(DB_URI, connect_args={'check_same_thread': False})
@@ -37,9 +37,12 @@ def generate_password(telegram_id):
     #                                                         generate_hash(password=password)})
     hashed = generate_hash(password)
     telegram = session.query(Telegram).filter_by(telegram_id=telegram_id).first()
-    telegram.user.password = hashed
-    session.commit()
-    return password
+    if telegram:
+        telegram.user.password = hashed
+        session.commit()
+        return password
+    else:
+        raise TelegramUserNotExistsError
 
 
 @exception_to_log

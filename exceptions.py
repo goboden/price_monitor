@@ -28,3 +28,7 @@ class GoodsNotExists(Exception):
 
 class URLExistsError(Exception):
     pass
+
+
+class TelegramUserNotExistsError(Exception):
+    pass

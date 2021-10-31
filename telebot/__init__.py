@@ -6,7 +6,7 @@ from url_parser import parse
 from url_parser.exceptions import BadURLError, ParserNotFoundError
 from url_parser.exceptions import ParseError, FetchError
 import database
-from exceptions import UserExistsError, URLExistsError
+from exceptions import UserExistsError, URLExistsError, TelegramUserNotExistsError
 
 bot_updater = Updater(API_KEY, use_context=True)
 bot = bot_updater.bot
@@ -29,8 +29,13 @@ def start_handler(update: Update, context: CallbackContext):
 
 def password_handler(update: Update, context: CallbackContext):
     telegram_id = update.message.from_user.id
-    password = database.generate_password(telegram_id)
-    update.message.reply_text(f'Ваш новый пароль: {password}')
+    # Пользователь еще не зарегистрирован ??
+    try:
+        password = database.generate_password(telegram_id)
+        update.message.reply_text(f'Ваш новый пароль: {password}')
+    except TelegramUserNotExistsError:
+        update.message.reply_text(f'Необходимо зарегистрироваться. Выполните команду /start')
+
 
 
 def add_url(update: Update, context: CallbackContext):
