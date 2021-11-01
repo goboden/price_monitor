@@ -24,7 +24,7 @@ def drop_db():
     db.metadata.drop_all(engine)
 
 
-#@exception_to_log
+@exception_to_log
 def generate_password(telegram_id):
     """
         Update password in database and return generated password
@@ -32,9 +32,6 @@ def generate_password(telegram_id):
     :return: generated password
     """
     password = password_generator(PASSWORD_LENGHT)
-    # username = session.query(Telegram).filter(Telegram.telegram_id == telegram_id).first().user.username
-    # session.query(User).filter_by(username=username).update({'password':
-    #                                                         generate_hash(password=password)})
     hashed = generate_hash(password)
     telegram = session.query(Telegram).filter_by(telegram_id=telegram_id).first()
     if telegram:
@@ -191,7 +188,7 @@ def price_update(goods: object, new_price: float):
         session.add(price)
     else:
         goods.price[-1].check_date = datetime.now()
-    
+
     session.commit()
 
 
@@ -213,4 +210,5 @@ def get_goods_item(goods_id):
 
 def get_goods_prices(goods_id):
     prices = session.query(Price).filter_by(goods_id=goods_id)
+    prices = prices.order_by(Price.check_date)
     return prices

@@ -1,6 +1,8 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Table, Integer, String, DateTime, Float, ForeignKey
+from sqlalchemy import Column, Table, ForeignKey
+from sqlalchemy import Integer, String, DateTime, Float
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.hybrid import hybrid_property
 from flask_login import UserMixin
 
 
@@ -42,8 +44,14 @@ class Goods(db):
     description = Column(String, nullable=False)
     image = Column(String, nullable=False)
 
-    prices = relationship("Price", back_populates="goods")
+    prices = relationship("Price",
+                          back_populates="goods",
+                          order_by="Price.check_date")
     users = relationship("User", secondary=user_goods, back_populates="goods")
+
+    @hybrid_property
+    def price(self):
+        return 0 if len(self.prices) == 0 else self.prices[-1].price
 
 
 class Price(db):
