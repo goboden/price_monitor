@@ -7,9 +7,15 @@
 </li>{% endblock %} {% block content %}
 <div class="container">
     <div class="row">
-        <h1 class="text-center">
-            {{ goods_item.name }}
-        </h1>
+        <h1 class="text-center p-2">{{ goods_item.title }}</h1>
+    </div>
+    
+    <div class="row">
+        <h2 class="text-center p-2">История изменения цены</h2>
+    </div>
+
+    <div class="row">
+        <canvas class="w-100 h-50 chartjs-render-monitor" id="price_chart"></canvas>
     </div>
 
     <div class="row">
@@ -25,7 +31,7 @@
                 {% for num, price in prices_enum %}
                 <tr>
                     <td>{{ num + 1 }}</td>
-                    <td>{{ price.check_date }}</td>
+                    <td>{{ price.check_date.strftime('%d-%m-%Y %H:%M') }}</td>
                     <td>{{ price.price }}</td>
                 </tr>
                 {% endfor %}
@@ -34,4 +40,47 @@
     </div>
 </div>
 
+<script src=" {{ url_for('static', filename='Chart.min.js') }} "></script>
+<script>
+    var ctx = document.getElementById('price_chart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [
+                {% for label in labels %}
+                "{{ label }}",
+                {% endfor %}
+            ],
+            datasets: [{
+                data: [
+                    {% for data_price in data %}
+                    {{ data_price }},
+                    {% endfor %}
+                ],
+                lineTension: 0,
+                backgroundColor: 'transparent',
+                borderColor: '#007bff',
+                borderWidth: 4,
+                pointBackgroundColor: '#007bff'
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: false
+                    }
+                }]
+            },
+            plugins: {
+                legend: {
+                    display: false
+                    }
+                },
+                tooltip: {
+                    enabled: false
+                }
+            }
+    });
+</script>
 {% endblock %}

@@ -6,6 +6,7 @@ import os
 from database import get_user_by_password, get_user_by_id
 from database import get_user_goods, get_goods_item, get_goods_prices
 from exceptions import UserOrGoodsNotExistsError
+from datetime import datetime
 
 
 def create_app():
@@ -83,9 +84,16 @@ def create_app():
         prices = get_goods_prices(goods_id)
         prices_enum = enumerate(prices)
 
+        labels = [
+            price.check_date.strftime('%d-%m-%Y %H:%M') for price in prices
+        ]
+        data = [price.price for price in prices]
+
         return render_template('goods_prices.html',
                                page_title=title,
                                goods_item=goods_item,
-                               prices_enum=prices_enum)
+                               prices_enum=prices_enum,
+                               labels=labels,
+                               data=data)
 
     return app
