@@ -6,7 +6,6 @@ import os
 from database import get_user_by_password, get_user_by_id
 from database import get_user_goods, get_goods_item, get_goods_prices
 from exceptions import UserOrGoodsNotExistsError
-from datetime import datetime
 
 
 def create_app():
@@ -58,7 +57,6 @@ def create_app():
     @app.route('/goods')
     @login_required
     def goods():
-        print(current_user.username)
         title = 'Товары'
         goods_items = get_user_goods(current_user.id)
         goods_enum = enumerate(goods_items)
@@ -70,6 +68,9 @@ def create_app():
     @login_required
     def goods_item(goods_id):
         goods_item = get_goods_item(goods_id)
+        if goods_item not in current_user.goods:
+            return render_template('goods_bad_item.html')
+
         title = f'Товар {goods_item.title}'
 
         return render_template('goods_item.html',
@@ -80,6 +81,9 @@ def create_app():
     @login_required
     def prices(goods_id):
         goods_item = get_goods_item(goods_id)
+        if goods_item not in current_user.goods:
+            return render_template('goods_bad_item.html')
+
         title = f'История цен для {goods_item.title}'
         prices = get_goods_prices(goods_id)
         prices_enum = enumerate(prices)
@@ -95,5 +99,11 @@ def create_app():
                                prices_enum=prices_enum,
                                labels=labels,
                                data=data)
+
+    @app.route('/get_price/<goods_id>', methods=['POST'])
+    @login_required
+    def get_price(goods_id):
+        print(f'get_price for {goods_id}')
+        return redirect(url_for('prices', goods_id=goods_id))
 
     return app

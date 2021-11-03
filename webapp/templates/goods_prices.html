@@ -15,6 +15,19 @@
     </div>
 
     <div class="row">
+        <div class="container">
+            <form action="{{ url_for('get_price', goods_id=goods_item.id) }}" method="post" class="row justify-content-center">
+                <div class="input-group">
+                    <div class="input-group-text">
+                        <h2 class="text-center">История изменения цены</h2>
+                    </div>
+                    <input type="submit" class="btn btn-outline-primary" value="Проверить текущую цену в магазине">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
         <canvas class="w-100 h-50 chartjs-render-monitor" id="price_chart"></canvas>
     </div>
 
