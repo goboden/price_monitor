@@ -32,7 +32,7 @@ def check_password(username, password):
     :return:
     """
     hash_from_db = session.query(User).filter(User.username == username).first().password
-    telegram_id = session.query(User).filter(User.username == username).first().telegram[0].id
+    # telegram_id = session.query(User).filter(User.username == username).first().telegram[0].id
     if generate_hash(password) == hash_from_db:
         return True
     else:
@@ -186,3 +186,40 @@ def price_update(goods: object, new_price: float):
 @exception_to_log
 def get_goods():
     return session.query(Goods).all()
+
+
+def get_last_price(goods):
+    prices = goods.price
+    # print(prices[0].check_date)
+    # print(prices[0].price)
+    # print(prices[1].check_date)
+    # print(prices[1].price)
+    goods.price.last_price = prices[-1]
+    return goods
+
+
+def get_user_goods(user_id):
+    user = session.query(User).filter_by(id=user_id).first()
+    goods = user.goods
+    last_price = 1111
+    goods.last_price = last_price
+    return goods
+
+
+def get_goods_item(goods_id):
+    goods = session.query(Goods).filter_by(id=goods_id).first()
+    return goods
+
+
+def get_goods_prices(goods_id):
+    prices = session.query(Price).filter_by(goods_id=goods_id)
+    prices = prices.order_by(Price.check_date)
+    return prices
+
+
+def get_chat_id_by_goods(goods):
+    chat_ids = []
+    for tg_user in goods.user:
+        chat_ids.append(tg_user.telegram[0].chat_id)
+    return chat_ids
+

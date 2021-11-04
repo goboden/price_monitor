@@ -6,3 +6,6 @@ __pycache__/
 *.log
 /url_parser/
 /*.sql
+/celerybeat-schedule
+/dump.rdb
+/telebot/

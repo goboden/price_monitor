@@ -43,6 +43,10 @@ class Goods(db):
     price = relationship("Price", back_populates="goods")
     user = relationship("User", secondary=user_goods, back_populates="goods")
 
+    # @hybrid_property
+    # def price(self):
+    #     return 0 if len(self.prices) == 0 else self.prices[-1].price
+
 
 class Price(db):
     __tablename__ = 'price'
@@ -53,3 +57,4 @@ class Price(db):
     goods_id = Column(Integer, ForeignKey('goods.id'))
 
     goods = relationship("Goods", back_populates="price")
+
