@@ -1,5 +1,3 @@
-*.db
-.env/
 __pycache__/
 .idea/
 /test*.py
@@ -9,3 +7,4 @@ __pycache__/
 /celerybeat-schedule
 /dump.rdb
 /telebot/
+secrets.py
