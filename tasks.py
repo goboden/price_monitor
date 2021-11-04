@@ -12,4 +12,4 @@ def update_urls_task():
 
 @celery_app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(crontab(minute='*/5'), update_urls_task.s())
+    sender.add_periodic_task(crontab(minute=0, hour='*/24'), update_urls_task.s())
