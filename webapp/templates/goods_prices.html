@@ -3,47 +3,37 @@
     <a class="nav-link active" aria-current="page" href="{{ url_for('goods') }}">Назад к списку товаров</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link active" aria-current="page" href="{{ url_for('goods_item', goods_id=goods_item.id) }}">Назад к странице товара</a>
+    <a class="nav-link active" aria-current="page" href="{{ url_for('goods_item', goods_id=goods_item.id) }}">Назад к
+        странице товара</a>
 </li>{% endblock %} {% block content %}
 <div class="container">
-    <div class="row">
+    <div class="d-flex justify-content-center">
         <h1 class="text-center p-2">{{ goods_item.title }}</h1>
     </div>
-    
-    <div class="row">
+
+    <form action="{{ url_for('get_price', goods_id=goods_item.id) }}" method="post"
+        class="d-flex justify-content-center">
         <h2 class="text-center p-2">История изменения цены</h2>
-    </div>
+        <input type="submit" class="btn btn-outline-primary" value="Проверить текущую цену в магазине">
+    </form>
 
     <div class="row">
-        <div class="container">
-            <form action="{{ url_for('get_price', goods_id=goods_item.id) }}" method="post" class="row justify-content-center">
-                <div class="input-group">
-                    <div class="input-group-text">
-                        <h2 class="text-center">История изменения цены</h2>
-                    </div>
-                    <input type="submit" class="btn btn-outline-primary" value="Проверить текущую цену в магазине">
-                </div>
-            </form>
-        </div>
+        <canvas class="" id="price_chart"></canvas>
     </div>
 
-    <div class="row">
-        <canvas class="w-100 h-50 chartjs-render-monitor" id="price_chart"></canvas>
-    </div>
-
-    <div class="row">
-        <table id="data" class="table table-striped table-bordered ">
+    <div class="d-flex justify-content-center">
+        <table id="data" class="table table-sm table-striped table-bordered w-50">
             <thead>
                 <tr>
-                    <th></th>
-                    <th>Дата</th>
-                    <th>Цена</th>
+                    <th scope="col-1">#</th>
+                    <th scope="col-3">Дата и время проверки</th>
+                    <th scope="col-2">Цена</th>
                 </tr>
             </thead>
             <tbody>
                 {% for num, price in prices_enum %}
                 <tr>
-                    <td>{{ num + 1 }}</td>
+                    <th scope="row">{{ num + 1 }}</th>
                     <td>{{ price.check_date.strftime('%d-%m-%Y %H:%M') }}</td>
                     <td>{{ price.price }}</td>
                 </tr>
@@ -64,36 +54,37 @@
                 "{{ label }}",
                 {% endfor %}
             ],
-            datasets: [{
-                data: [
-                    {% for data_price in data %}
-                    {{ data_price }},
-                    {% endfor %}
-                ],
-                lineTension: 0,
-                backgroundColor: 'transparent',
+    datasets: [{
+        data: [
+            {% for data_price in data %}
+            {{ data_price }},
+    {% endfor %}
+    ],
+        lineTension: 0,
+            backgroundColor: 'transparent',
                 borderColor: '#007bff',
-                borderWidth: 4,
-                pointBackgroundColor: '#007bff'
+                    borderWidth: 4,
+                        pointBackgroundColor: '#007bff'
             }]
         },
-        options: {
+    options: {
+        aspectRatio: 4,
             scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: false
-                    }
-                }]
-            },
-            plugins: {
-                legend: {
-                    display: false
-                    }
-                },
-                tooltip: {
-                    enabled: false
+            yAxes: [{
+                ticks: {
+                    beginAtZero: false
                 }
+            }]
+        },
+        plugins: {
+            legend: {
+                display: false
             }
+        },
+        tooltip: {
+            enabled: false
+        }
+    }
     });
 </script>
 {% endblock %}
