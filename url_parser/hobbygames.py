@@ -11,7 +11,9 @@ class Parser(GeneralParser):
 
     def get_price(self, soup: BeautifulSoup) -> float:
         try:
-            div = soup.find('div', class_='price price-new')
+            div = soup.find('div', class_='price')
+            if not div:
+                div = soup.find('div', class_='price price-new') # ???
             price_text = div.text
             price_text = ''.join([s for s in price_text if s.isdigit()])
             price = float(price_text)

@@ -10,6 +10,10 @@ parsers = {
 }
 
 
+class NotValidURLError(Exception):
+    pass
+
+
 class ParserNotFoundError(Exception):
     def __init__(self, domain):
         self.message = f'Не найден модуль парсера для {domain}'
@@ -19,6 +23,8 @@ class ParserNotFoundError(Exception):
 def get_parser(url: str, **kwargs) -> GeneralParser:
     parsed_url = urlparse(url)
     domain = parsed_url.netloc
+    if not domain:
+        raise NotValidURLError
     parser_module = parsers.get(domain, False)
     if not parser_module:
         raise ParserNotFoundError(domain)
