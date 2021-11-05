@@ -207,8 +207,7 @@ def get_user_goods(user_id):
 
 
 def get_goods_item(goods_id):
-    goods = session.query(Goods).filter_by(id=goods_id).first()
-    return goods
+    return session.query(Goods).filter_by(id=goods_id).first()
 
 
 def get_goods_prices(goods_id):
@@ -218,8 +217,12 @@ def get_goods_prices(goods_id):
 
 
 def get_chat_id_by_goods(goods):
+    """
+
+    :param goods:
+    :return: list of chat id
+    """
     chat_ids = []
     for tg_user in goods.user:
         chat_ids.append(tg_user.telegram[0].chat_id)
     return chat_ids
-
