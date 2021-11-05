@@ -7,4 +7,4 @@ __pycache__/
 /celerybeat-schedule
 /dump.rdb
 /telebot/
-secrets.py
+/celery_start.txt
