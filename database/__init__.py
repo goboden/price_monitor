@@ -9,7 +9,6 @@ from sqlalchemy.exc import *
 from decorators import exception_to_log
 from exceptions import URLExistsError, TelegramUserNotExistsError
 
-
 engine = create_engine(DB_URI, connect_args={'check_same_thread': False})
 session = scoped_session(sessionmaker(bind=engine))
 
@@ -33,7 +32,8 @@ def generate_password(telegram_id):
     """
     password = password_generator(PASSWORD_LENGHT)
     hashed = generate_hash(password)
-    telegram = session.query(Telegram).filter_by(telegram_id=telegram_id).first()
+    telegram = session.query(Telegram).filter_by(
+        telegram_id=telegram_id).first()
     if telegram:
         telegram.user.password = hashed
         session.commit()
@@ -44,7 +44,9 @@ def generate_password(telegram_id):
 
 @exception_to_log
 def password_generator(password_length=15):
-    alphabet = list('1234567890+-/*!&$#?=w@<>abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    alphabet = list(
+        '1234567890+-/*!&$#?=w@<>abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    )
     shuffle(alphabet)
     password = ''.join([choice(alphabet) for _ in range(password_length)])
     return password
@@ -52,7 +54,12 @@ def password_generator(password_length=15):
 
 @exception_to_log
 def generate_hash(password, salt=SALT):
-    return scrypt(str(password).encode(), salt=str(salt).encode(), n=8, r=256, p=4, dklen=64).hex()
+    return scrypt(str(password).encode(),
+                  salt=str(salt).encode(),
+                  n=8,
+                  r=256,
+                  p=4,
+                  dklen=64).hex()
 
 
 @exception_to_log
@@ -62,7 +69,8 @@ def get_user_by_password(password):
     :param password:
     :return:
     """
-    return session.query(User).filter(User.password == generate_hash(password)).first()
+    return session.query(User).filter(
+        User.password == generate_hash(password)).first()
 
 
 @exception_to_log
@@ -95,17 +103,13 @@ def add_user(username, telegram_id, chat_id):
     :param password:
     :return:
     """
-    user = User(
-        username=username
-    )
+    user = User(username=username)
     session.add(user)
     session.flush()
 
-    telegram = Telegram(
-        telegram_id=telegram_id,
-        chat_id=chat_id,
-        user_id=user.id
-    )
+    telegram = Telegram(telegram_id=telegram_id,
+                        chat_id=chat_id,
+                        user_id=user.id)
     session.add(telegram)
     session.commit()
 
@@ -122,7 +126,8 @@ def add_goods(user: object, url, title, description, image_url, price):
     :param price:
     :return:
     """
-    goods_exist = (session.query(Goods).filter(Goods.url == url).first() is None)
+    goods_exist = (session.query(Goods).filter(Goods.url == url).first() is
+                   None)
 
     if goods_exist:
         goods = Goods(
@@ -135,11 +140,9 @@ def add_goods(user: object, url, title, description, image_url, price):
         session.add(goods)
         session.flush()
 
-        price = Price(
-            check_date=datetime.now(),
-            price=price,
-            goods_id=goods.id
-        )
+        price = Price(check_date=datetime.now(),
+                      price=price,
+                      goods_id=goods.id)
         session.add(price)
         session.commit()
     else:
@@ -150,7 +153,8 @@ def add_goods(user: object, url, title, description, image_url, price):
 
 
 def add_url(telegram_id, url, title, description, image, price):
-    telegram = session.query(Telegram).filter_by(telegram_id=telegram_id).first()
+    telegram = session.query(Telegram).filter_by(
+        telegram_id=telegram_id).first()
     user = telegram.user
     if user:
         goods_item = session.query(Goods).filter_by(url=url).first()
@@ -159,8 +163,7 @@ def add_url(telegram_id, url, title, description, image, price):
                                title=title,
                                description=description,
                                image=image)
-            price = Price(check_date=datetime.now(),
-                          price=price)
+            price = Price(check_date=datetime.now(), price=price)
             goods_item.prices.append(price)
             session.add(goods_item)
         if goods_item not in user.goods:
@@ -180,11 +183,9 @@ def price_update(goods: object, new_price: float):
     :return:
     """
     if goods.price[-1].price != float(new_price):
-        price = Price(
-            check_date=datetime.now(),
-            price=new_price,
-            goods_id=goods.id
-        )
+        price = Price(check_date=datetime.now(),
+                      price=new_price,
+                      goods_id=goods.id)
         session.add(price)
     else:
         goods.price[-1].check_date = datetime.now()
@@ -200,15 +201,35 @@ def get_goods():
 def get_user_goods(user_id):
     user = session.query(User).filter_by(id=user_id).first()
     goods = user.goods
+
+
+def get_last_price(goods):
+    prices = goods.price
+    # print(prices[0].check_date)
+    # print(prices[0].price)
+    # print(prices[1].check_date)
+    # print(prices[1].price)
+    goods.price.last_price = prices[-1]
     return goods
 
 
 def get_goods_item(goods_id):
-    goods = session.query(Goods).filter_by(id=goods_id).first()
-    return goods
+    return session.query(Goods).filter_by(id=goods_id).first()
 
 
 def get_goods_prices(goods_id):
     prices = session.query(Price).filter_by(goods_id=goods_id)
     prices = prices.order_by(Price.check_date)
     return prices
+
+
+def get_chat_id_by_goods(goods):
+    """
+
+    :param goods:
+    :return: list of chat id
+    """
+    chat_ids = []
+    for tg_user in goods.user:
+        chat_ids.append(tg_user.telegram[0].chat_id)
+    return chat_ids

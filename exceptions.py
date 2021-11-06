@@ -2,6 +2,10 @@ class UserExistsError(Exception):
     """Пользователь уже есть в базе"""
 
 
+class UserNotExistsError(Exception):
+    """Пользователь не найден"""
+
+
 class UserOrGoodsNotExistsError(Exception):
     """Товара нет в базе или у пользователя нет товаров"""
 
