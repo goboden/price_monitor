@@ -1,23 +1,24 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Table, Integer, String, DateTime, Float, ForeignKey
+from sqlalchemy import Column, Table, ForeignKey
+from sqlalchemy import Integer, String, DateTime, Float
 from sqlalchemy.orm import relationship
-
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.hybrid import hybrid_property
+from flask_login import UserMixin
 
 db = declarative_base()
 
 user_goods = Table('user_goods', db.metadata,
                    Column('user_id', Integer(), ForeignKey("users.id")),
-                   Column('goods_id', Integer(), ForeignKey("goods.id"))
-                   )
+                   Column('goods_id', Integer(), ForeignKey("goods.id")))
 
 
-class User(db):
+class User(db, UserMixin):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
     username = Column(String(64), index=True, unique=True)
     password = Column(String(128))
-    goods = relationship("Goods", secondary=user_goods, back_populates="user")
+    goods = relationship("Goods", secondary=user_goods, back_populates="users")
 
 
 class Telegram(db):
@@ -40,12 +41,14 @@ class Goods(db):
     description = Column(String, nullable=False)
     image = Column(String, nullable=False)
 
-    price = relationship("Price", back_populates="goods")
-    user = relationship("User", secondary=user_goods, back_populates="goods")
+    prices = relationship("Price",
+                          back_populates="goods",
+                          order_by="Price.check_date")
+    users = relationship("User", secondary=user_goods, back_populates="goods")
 
-    # @hybrid_property
-    # def price(self):
-    #     return 0 if len(self.prices) == 0 else self.prices[-1].price
+    @hybrid_property
+    def price(self):
+        return 0 if len(self.prices) == 0 else self.prices[-1].price
 
 
 class Price(db):
@@ -55,6 +58,4 @@ class Price(db):
     check_date = Column(DateTime, nullable=False)
     price = Column(Float, nullable=False)
     goods_id = Column(Integer, ForeignKey('goods.id'))
-
-    goods = relationship("Goods", back_populates="price")
-
+    goods = relationship("Goods", back_populates="prices")

@@ -1,10 +1,15 @@
 __pycache__/
 .idea/
 /test*.py
-*.log
+/*.log
 /url_parser/
 /*.sql
 /celerybeat-schedule
 /dump.rdb
 /telebot/
 /celery_start.txt
+/*.db
+/test*
+pytest.ini
+.env/
+venv/
