@@ -21,26 +21,36 @@ def exception_to_log(func):
         except Exception as ex:
             # print(func.__name__)
             if func.__name__ == 'price_update':
-                log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-"*100}')
+                log_to_file(
+                    f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-"*100}')
                 raise PriceException
             if func.__name__ == 'get_user_by_password':
-                log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-"*100}')
+                log_to_file(
+                    f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-"*100}')
                 raise UserOrGoodsNotExistsError
             elif func.__name__ == 'get_user_by_id':
-                log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-"*100}')
+                log_to_file(
+                    f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-"*100}')
                 raise UserOrGoodsNotExistsError
             elif func.__name__ == 'get_goods_by_user':
-                log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-" * 100}')
+                log_to_file(
+                    f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-" * 100}')
                 raise UserOrGoodsNotExistsError
             elif func.__name__ == 'add_user':
-                log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-" * 100}')
+                log_to_file(
+                    f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-" * 100}')
                 raise UserExistsError
             elif func.__name__ == 'add_goods':
-                log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-" * 100}')
+                log_to_file(
+                    f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-" * 100}')
                 raise AddGoodsError
             if func.__name__ == 'update_urls':
-                log_to_file(f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-"*100}')
+                log_to_file(
+                    f' !!! {func.__name__} !!!\nОшибка:{ex}\n{"-"*100}')
                 raise GoodsNotExists
             else:
-                log_to_file(f' !!! {func.__name__} !!!\nException:{ex}\n{"-" * 100}')
+                log_to_file(
+                    f' !!! {func.__name__} !!!\nException:{ex}\n{"-" * 100}')
+                raise ex
+
     return in_func

@@ -5,6 +5,7 @@ from flask_login import login_user, logout_user, login_required
 import os
 from database import get_user_by_password, get_user_by_id
 from database import get_user_goods, get_goods_item, get_goods_prices
+from backend.update_prices import update_price_by_goods_id
 from exceptions import UserOrGoodsNotExistsError
 
 
@@ -103,7 +104,7 @@ def create_app():
     @app.route('/get_price/<goods_id>', methods=['POST'])
     @login_required
     def get_price(goods_id):
-        print(f'get_price for {goods_id}')
+        update_price_by_goods_id(goods_id)
         return redirect(url_for('prices', goods_id=goods_id))
 
     return app

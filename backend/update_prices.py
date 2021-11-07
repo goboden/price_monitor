@@ -23,7 +23,8 @@ def parse_price_and_notification(goods, notify_on=True):
     new_price = parse(goods.url, no_cache=True).price
     if notify_on:
         if new_price != old_price:
-            text = f'Изменилась цена на {goods.title}({goods.url})'
+            # text = f'Изменилась цена на {goods.title}({goods.url})'
+            text = f'Изменилась цена на {goods.title} ({old_price} -> {new_price})'
             for chat_id in get_chat_id_by_goods(goods):
                 send_message(chat_id, text)
     return new_price
