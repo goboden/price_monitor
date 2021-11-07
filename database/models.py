@@ -5,14 +5,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_login import UserMixin
 
-
 db = declarative_base()
-
 
 user_goods = Table('user_goods', db.metadata,
                    Column('user_id', Integer(), ForeignKey("users.id")),
-                   Column('goods_id', Integer(), ForeignKey("goods.id"))
-                   )
+                   Column('goods_id', Integer(), ForeignKey("goods.id")))
 
 
 class User(db, UserMixin):
@@ -61,5 +58,4 @@ class Price(db):
     check_date = Column(DateTime, nullable=False)
     price = Column(Float, nullable=False)
     goods_id = Column(Integer, ForeignKey('goods.id'))
-
     goods = relationship("Goods", back_populates="prices")

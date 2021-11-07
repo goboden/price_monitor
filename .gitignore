@@ -4,6 +4,7 @@ secret.py
 
 .idea
 .vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -63,6 +64,7 @@ coverage.xml
 
 # Django stuff:
 *.log
+<<<<<<< HEAD
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -136,3 +138,7 @@ dmypy.json
 *.db
 test_create_db.py
 
+/*.sql
+/celerybeat-schedule
+/dump.rdb
+/celery_start.txt
