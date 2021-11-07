@@ -1,4 +1,4 @@
-from database import get_goods, price_update, get_last_price, get_chat_id_by_goods, get_goods_item
+from database import get_goods, price_update, get_chat_id_by_goods, get_goods_item
 from url_parser import parse
 from decorators import exception_to_log
 from telebot import send_message
@@ -19,11 +19,11 @@ def update_urls():
 
 
 def parse_price_and_notification(goods, notify_on=True):
-    old_price = get_last_price(goods).price.last_price.price
+    old_price = goods.price
     new_price = parse(goods.url, no_cache=True).price
     if notify_on:
         if new_price != old_price:
-            text = f'Изменилась цена на {goods.title}'
+            text = f'Изменилась цена на {goods.title}({goods.url})'
             for chat_id in get_chat_id_by_goods(goods):
                 send_message(chat_id, text)
     return new_price

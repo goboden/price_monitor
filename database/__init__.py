@@ -182,35 +182,25 @@ def price_update(goods: object, new_price: float):
     :param new_price:
     :return:
     """
-    if goods.price[-1].price != float(new_price):
-        price = Price(check_date=datetime.now(),
-                      price=new_price,
-                      goods_id=goods.id)
-        session.add(price)
+    if goods.price != new_price:
+        prices = Price(check_date=datetime.now(),
+                       price=new_price,
+                       goods_id=goods.id)
+        session.add(prices)
     else:
-        goods.price[-1].check_date = datetime.now()
+        goods.prices[-1].check_date = datetime.now()
 
     session.commit()
 
 
-@exception_to_log
+# @exception_to_log
 def get_goods():
     return session.query(Goods).all()
 
 
 def get_user_goods(user_id):
     user = session.query(User).filter_by(id=user_id).first()
-    goods = user.goods
-
-
-def get_last_price(goods):
-    prices = goods.price
-    # print(prices[0].check_date)
-    # print(prices[0].price)
-    # print(prices[1].check_date)
-    # print(prices[1].price)
-    goods.price.last_price = prices[-1]
-    return goods
+    return user.goods
 
 
 def get_goods_item(goods_id):
@@ -230,6 +220,6 @@ def get_chat_id_by_goods(goods):
     :return: list of chat id
     """
     chat_ids = []
-    for tg_user in goods.user:
+    for tg_user in goods.users:
         chat_ids.append(tg_user.telegram[0].chat_id)
     return chat_ids

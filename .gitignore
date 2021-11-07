@@ -7,6 +7,7 @@ secret.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
+<<<<<<< HEAD
 *.py[cod]
 *$py.class
 
@@ -138,7 +139,18 @@ dmypy.json
 *.db
 test_create_db.py
 
+=======
+.idea/
+/test*.py
+/*.log
+/url_parser/
+>>>>>>> modules/database
 /*.sql
 /celerybeat-schedule
 /dump.rdb
 /celery_start.txt
+/*.db
+/test*
+pytest.ini
+.env/
+venv/
