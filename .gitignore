@@ -13,3 +13,6 @@ __pycache__/
 pytest.ini
 .env/
 venv/
+/start_bot.sh
+/start_server.sh
+/url_parser/

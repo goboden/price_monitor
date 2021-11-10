@@ -28,3 +28,10 @@ class AddGoodsError(Exception):
 
 class GoodsNotExists(Exception):
     """Видимо url не верный"""
+
+class URLExistsError(Exception):
+    """"""
+
+
+class TelegramUserNotExistsError(Exception):
+    """"""
