@@ -2,16 +2,16 @@
 
 **Создание базы данных**
 
-'''python -m database --create'''
+```python -m database --create```
 
 
 **Удаление базы данных**
 
-'''python -m database --drop'''
+```python -m database --drop```
 
 **Ручное обновление цен на все товары пользователей**
 
-'''python -m backend --price-update'''
+```python -m backend --price-update```
 
 
 **Запуск автоматического обновления цен на все товары пользователей по расписанию**
@@ -22,12 +22,12 @@
 
 В одном терминале:
 
-'''celery -A tasks worker --loglevel=INFO -E'''
+```celery -A tasks worker --loglevel=INFO -E```
 
 Во втором терминале:
 
-'''celery -A tasks beat'''
+```celery -A tasks beat```
 
 Вариант 2:
 
-'''celery -A tasks worker -B --loglevel=INFO -E'''
+```celery -A tasks worker -B --loglevel=INFO -E```
