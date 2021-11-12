@@ -7,7 +7,6 @@ secret.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
-<<<<<<< HEAD
 *.py[cod]
 *$py.class
 
@@ -65,7 +64,6 @@ coverage.xml
 
 # Django stuff:
 *.log
-<<<<<<< HEAD
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -139,12 +137,6 @@ dmypy.json
 *.db
 test_create_db.py
 
-=======
-.idea/
-/test*.py
-/*.log
-/url_parser/
->>>>>>> modules/database
 /*.sql
 /celerybeat-schedule
 /dump.rdb
@@ -154,3 +146,6 @@ test_create_db.py
 pytest.ini
 .env/
 venv/
+/start_bot.sh
+/start_server.sh
+

@@ -16,11 +16,13 @@ session = scoped_session(sessionmaker(bind=engine))
 @exception_to_log
 def create_db():
     db.metadata.create_all(engine)
+    print('Database created')
 
 
 @exception_to_log
 def drop_db():
     db.metadata.drop_all(engine)
+    print('Database deleted')
 
 
 @exception_to_log
