@@ -29,23 +29,23 @@ def add_goods(goods):
         add_goods_item(*goods_item)
 
 
-def add_user(id, name, telegram_id, chat_id, password):
-    print(f'{id}, {name}, {telegram_id}, {chat_id}, {password}')
+def add_user(user_id, name, telegram_id, chat_id, password):
+    print(f'{user_id}, {name}, {telegram_id}, {chat_id}, {password}')
     telegram = Telegram(telegram_id=telegram_id, chat_id=chat_id)
-    telegram.user_id = id
-    user = User(id=id, username=name, password=generate_hash(password))
+    telegram.user_id = user_id
+    user = User(id=user_id, username=name, password=generate_hash(password))
     session.add(telegram)
     session.add(user)
     session.commit()
 
 
-def add_goods_item(id, user_id, title, url, image, description, price):
-    print(f'{id}, {user_id}, {title}, {price}')
+def add_goods_item(goods_id, user_id, title, url, image, description, price):
+    print(f'{goods_id}, {user_id}, {title}, {price}')
 
     user = session.query(User).filter_by(id=user_id).first()
     goods_item = session.query(Goods).filter_by(url=url).first()
     if not goods_item:
-        goods_item = Goods(id=id,
+        goods_item = Goods(id=goods_id,
                            title=title,
                            url=url,
                            image=image,
@@ -61,7 +61,7 @@ def add_goods_item(id, user_id, title, url, image, description, price):
     session.commit()
 
 
-goods = (
+goods_items = (
     (1, 1, 'Warhammer 40,000: Recruit Edition',
      'https://hobbygames.ru/warhammer-40000-recruit-edition',
      'https://hobbygames.cdnvideo.ru/image/cache/hobbygames_beta/data/Games_Workshop_New/Warhammer_40k/Starter/WH40k_Recruit_Edition_Starter-1024x1024-wm.jpg',
@@ -99,6 +99,6 @@ if __name__ == "__main__":
 
     add_users()
     print('Users added')
-    add_goods(goods)
+    add_goods(goods_items)
     print('Goods added')
     print('Init complete')

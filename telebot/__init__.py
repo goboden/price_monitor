@@ -37,7 +37,6 @@ def password_handler(update: Update, context: CallbackContext):
         update.message.reply_text(f'Необходимо зарегистрироваться. Выполните команду /start')
 
 
-
 def add_url(update: Update, context: CallbackContext):
     url = update.message.text
     telegram_id = update.message.from_user.id
@@ -49,7 +48,7 @@ def add_url(update: Update, context: CallbackContext):
                          parsed_data.description,
                          parsed_data.image,
                          parsed_data.price)
-        reply_text = f'Адрес успешно добавлен. {parsed_data.name}, цена {parsed_data.price}'
+        reply_text = f'Товар успешно добавлен. {parsed_data.name}, цена {parsed_data.price}'
         update.message.reply_text(reply_text)
     except BadURLError:
         update.message.reply_text('Вы ввели некорректный адрес.')
@@ -58,7 +57,7 @@ def add_url(update: Update, context: CallbackContext):
     except (ParseError, FetchError):
         update.message.reply_text('Что-то пошло не так ...')
     except URLExistsError:
-        update.message.reply_text('Такой адрес уже есть.')
+        update.message.reply_text('Такой товар уже есть.')
     except Exception as e:
         print(e.message)
 
