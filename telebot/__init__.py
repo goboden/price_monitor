@@ -22,9 +22,9 @@ def start_handler(update: Update, context: CallbackContext):
     chat_id = update.message.chat.id
     try:
         database.add_user(user_name, telegram_id, chat_id)
-        update.message.reply_text('Вы успешно зарегистрировались')
+        update.message.reply_text('Вы успешно зарегистрировались.')
     except UserExistsError:
-        update.message.reply_text('Вы уже ранее регистрировались')
+        update.message.reply_text('Вы уже зарегистрированы.')
 
 
 def password_handler(update: Update, context: CallbackContext):
@@ -34,7 +34,8 @@ def password_handler(update: Update, context: CallbackContext):
         password = database.generate_password(telegram_id)
         update.message.reply_text(f'Ваш новый пароль: {password}')
     except TelegramUserNotExistsError:
-        update.message.reply_text(f'Необходимо зарегистрироваться. Выполните команду /start')
+        update.message.reply_text(
+            f'Необходимо зарегистрироваться. Выполните команду /start')
 
 
 def add_url(update: Update, context: CallbackContext):
@@ -42,11 +43,8 @@ def add_url(update: Update, context: CallbackContext):
     telegram_id = update.message.from_user.id
     try:
         parsed_data = parse(url)
-        database.add_url(telegram_id,
-                         url,
-                         parsed_data.name,
-                         parsed_data.description,
-                         parsed_data.image,
+        database.add_url(telegram_id, url, parsed_data.name,
+                         parsed_data.description, parsed_data.image,
                          parsed_data.price)
         reply_text = f'Товар успешно добавлен. {parsed_data.name}, цена {parsed_data.price}'
         update.message.reply_text(reply_text)
@@ -55,7 +53,7 @@ def add_url(update: Update, context: CallbackContext):
     except ParserNotFoundError:
         update.message.reply_text('Этот магазин пока не поддерживается.')
     except (ParseError, FetchError):
-        update.message.reply_text('Что-то пошло не так ...')
+        update.message.reply_text('Не удалось получить инфрмацию по ссылке.')
     except URLExistsError:
         update.message.reply_text('Такой товар уже есть.')
     except Exception as e:
