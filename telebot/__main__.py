@@ -3,6 +3,7 @@ from telebot import bot_updater
 
 
 def start_bot():
+    print('Bot started')
     bot_updater.start_polling()
     bot_updater.idle()
 

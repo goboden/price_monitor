@@ -1,0 +1,22 @@
+{% extends "goods.html" %} {% block content %}
+<table id="data" class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Товар</th>
+            <th>Ссылка в магазине</th>
+            <th>Цена</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for num, goods_item in goods_enum %}
+        <tr>
+            <td>{{ num + 1 }}</td>
+            <td><a href=" {{ url_for('goods_item', goods_id=goods_item.id) }} ">{{ goods_item.title }}</a></td>
+            <td>{{ goods_item.url }}</td>
+            <td>{{ goods_item.price }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

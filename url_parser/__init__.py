@@ -1,31 +1,11 @@
-from urllib.parse import urlparse
-from url_parser.parser import GeneralParser
-import url_parser.yandex
-import url_parser.hobbygames
+from url_parser.parsers import Parser
 
 
-parsers = {
-    'market.yandex.ru': url_parser.yandex,
-    'hobbygames.ru': url_parser.hobbygames,
-}
-
-
-class NotValidURLError(Exception):
-    pass
-
-
-class ParserNotFoundError(Exception):
-    def __init__(self, domain):
-        self.message = f'Не найден модуль парсера для {domain}'
-        super().__init__(self.message)
-
-
-def get_parser(url: str, **kwargs) -> GeneralParser:
-    parsed_url = urlparse(url)
-    domain = parsed_url.netloc
-    if not domain:
-        raise NotValidURLError
-    parser_module = parsers.get(domain, False)
-    if not parser_module:
-        raise ParserNotFoundError(domain)
-    return parser_module.Parser(url, **kwargs)
+def parse(url, no_cache=False, cache_ttl=None):
+    parser = Parser.create(url)
+    if no_cache:
+        parser.use_cache = False
+    if cache_ttl is not None:
+        parser.cache.ttl = cache_ttl
+    parser.parse()
+    return parser.data

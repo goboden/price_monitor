@@ -1,5 +1,9 @@
 url_parser/cache
 secret.py
+*.db
+
+.idea
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -132,3 +136,16 @@ dmypy.json
 .pyre/
 *.db
 test_create_db.py
+
+/*.sql
+/celerybeat-schedule
+/dump.rdb
+/celery_start.txt
+/*.db
+/test*
+pytest.ini
+.env/
+venv/
+/start_bot.sh
+/start_server.sh
+

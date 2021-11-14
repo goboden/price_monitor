@@ -1,0 +1,10 @@
+{% extends "goods.html" %} {% block menu %}
+<li class="nav-item">
+    <a class="nav-link active" aria-current="page" href="{{ url_for('goods') }}">Назад к списку товаров</a>
+</li>{% endblock %} {% block content %}
+<div class="container ">
+    <div class="row">
+        <h1 class="text-center p-2">Такого товара нет в базе</h1>
+    </div>
+</div>
+{% endblock %}
